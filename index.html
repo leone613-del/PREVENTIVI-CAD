@@ -261,7 +261,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label for="hours" class="block text-xs font-medium text-muted mb-1">Ore Modellazione</label>
-                  <input id="hours" type="number" min="0" step="0.25" value="3" class="w-full rounded-lg px-3 py-2 text-sm">
+                  <input id="hours" type="number" min="0" step="0.25" value="1" class="w-full rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
                   <label for="rate" class="block text-xs font-medium text-muted mb-1">Tariffa Oraria (€/h)</label>
@@ -329,7 +329,7 @@
 
             <div>
               <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso Totale Resina (g)</label>
-              <input id="grams" type="number" min="0" step="0.1" value="6" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <input id="grams" type="number" min="0" step="0.1" value="1" class="w-full rounded-lg px-3 py-2.5 text-sm">
             </div>
             <div>
               <label for="resinPrice" class="block text-xs font-medium text-muted mb-1">Costo Resina (€/kg)</label>
@@ -338,7 +338,7 @@
 
             <div>
               <label for="printHours" class="block text-xs font-medium text-muted mb-1">Tempo Totale Stampa (Ore)</label>
-              <input id="printHours" type="number" min="0" step="0.25" value="3" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <input id="printHours" type="number" min="0" step="0.25" value="1" class="w-full rounded-lg px-3 py-2.5 text-sm">
             </div>
             <div>
               <label for="machineRate" class="block text-xs font-medium text-muted mb-1">Costo Macchina (€/h)</label>
@@ -585,8 +585,8 @@
         aiAnalyzeBtn.disabled = true;
 
         try {
-          const apiKey = ""; 
-          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+          const apiKey = ""; // Inserisci qui la tua chiave API se desideri l'analisi IA live
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
           
           const base64Data = photoData.split(',')[1];
           const mimeType = photoData.substring(photoData.indexOf(':') + 1, photoData.indexOf(';'));

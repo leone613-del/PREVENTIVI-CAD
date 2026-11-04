@@ -311,7 +311,7 @@
       </div>
     </section>
 
-    <!-- SECTION 2: PREVENTIVO STAMPA 3D (Ridisegnato con le 3 sezioni richieste) -->
+    <!-- SECTION 2: PREVENTIVO STAMPA 3D -->
     <section id="print-quote" class="tab-content hidden">
       <div class="max-w-4xl mx-auto space-y-6">
         
@@ -562,13 +562,13 @@
 
     inputIds.forEach(id => { if($(id)) $(id).addEventListener('input', calculate); });
 
-    // Gestione Tab
+    // Gestione Corretta dei Tab
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => {
           b.className = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line";
         });
-        btn.className = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10";
+        btn.className = "tab-btn active px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10";
 
         const target = btn.dataset.tab;
         document.querySelectorAll('.tab-content').forEach(section => {

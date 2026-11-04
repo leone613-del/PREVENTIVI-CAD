@@ -580,13 +580,21 @@
       aiAnalyzeBtn.addEventListener('click', async function() {
         if (!photoData) return;
         
+        // ⚠️ INSERISCI QUI LA TUA CHIAVE API DI GOOGLE AI STUDIO
+        const apiKey = "INSERISCI_QUI_LA_TUA_API_KEY"; 
+        
+        if (!apiKey || apiKey === "INSERISCI_QUI_LA_TUA_API_KEY") {
+          alert("Attenzione: Inserisci la tua chiave API di Google Gemini nel codice JavaScript alla variabile 'apiKey'.");
+          return;
+        }
+
         const origBtnText = aiAnalyzeBtn.innerHTML;
         aiAnalyzeBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analisi in corso...`;
         aiAnalyzeBtn.disabled = true;
 
         try {
-          const apiKey = ""; // Inserisci qui la tua chiave API se desideri l'analisi IA live
-          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+          // Utilizzo del modello stabile corrente gemini-3.5-flash
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
           
           const base64Data = photoData.split(',')[1];
           const mimeType = photoData.substring(photoData.indexOf(':') + 1, photoData.indexOf(';'));
@@ -622,6 +630,11 @@
           });
 
           const result = await response.json();
+
+          if (result.error) {
+            throw new Error(result.error.message || "Errore restituito dall'API di Google");
+          }
+
           const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
 
           if (jsonText) {
@@ -639,6 +652,7 @@
           }
         } catch (err) {
           console.error(err);
+          alert("Errore durante l'analisi IA: " + err.message);
         } finally {
           aiAnalyzeBtn.innerHTML = origBtnText;
           aiAnalyzeBtn.disabled = false;

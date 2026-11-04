@@ -294,6 +294,11 @@
                   <input id="revisions" type="number" min="0" step="0.5" value="0" class="w-full rounded-lg px-3 py-2 text-sm">
                 </div>
               </div>
+
+              <div>
+                <label for="cadDiscount" class="block text-xs font-medium text-muted mb-1">Sconto CAD (%)</label>
+                <input id="cadDiscount" type="number" min="0" max="100" step="1" value="0" class="w-full rounded-lg px-3 py-2 text-sm" placeholder="0">
+              </div>
             </div>
           </div>
 
@@ -307,90 +312,90 @@
 
     <!-- SECTION 2: STAMPA 3D -->
     <section id="print-quote" class="tab-content hidden">
-      <div class="max-w-xl mx-auto bg-panel border border-line rounded-2xl p-5 shadow-sm card-print">
+      <div class="max-w-3xl mx-auto bg-panel border border-line rounded-2xl p-6 shadow-md card-print">
+        <div class="flex items-center justify-between border-b border-line pb-4 mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-print text-gold"></i> Parametri di Stampa 3D
+            </h2>
+            <p class="text-xs text-muted mt-0.5">Imposta i dettagli di produzione, costi resina e ricarico di vendita</p>
+          </div>
+        </div>
+
         <div class="space-y-4">
-          
           <!-- Numero Pezzi -->
           <div class="p-3 bg-gold/10 border border-gold/30 rounded-xl">
-            <label for="printQty" class="block text-xs font-bold text-gold mb-1"><i class="fa-solid fa-boxes-stacked"></i> Numero di Pezzi da Stampare</label>
+            <label for="printQty" class="block text-xs font-bold text-gold mb-1"><i class="fa-solid fa-boxes-stacked"></i> Numero di stampa</label>
             <input id="printQty" type="number" min="1" step="1" value="1" class="w-full rounded-lg px-3 py-2.5 text-sm font-bold text-white">
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso Resina (g)</label>
-              <input id="grams" type="number" min="0" step="0.1" value="6" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso totale resina (g)</label>
+              <input id="grams" type="number" min="0" step="0.1" value="1" class="w-full rounded-lg px-3 py-2 text-sm">
             </div>
             <div>
-              <label for="resinPrice" class="block text-xs font-medium text-muted mb-1">Costo Resina (€/kg)</label>
-              <input id="resinPrice" type="number" min="0" step="1" value="250" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="resinPrice" class="block text-xs font-medium text-muted mb-1">Costo resina (€/kg)</label>
+              <input id="resinPrice" type="number" min="0" step="1" value="150" class="w-full rounded-lg px-3 py-2 text-sm">
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="printHours" class="block text-xs font-medium text-muted mb-1">Tempo Stampa (Ore)</label>
-              <input id="printHours" type="number" min="0" step="0.25" value="3" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="printHours" class="block text-xs font-medium text-muted mb-1">Tempo totale stampa (ore)</label>
+              <input id="printHours" type="number" min="0" step="0.25" value="1" class="w-full rounded-lg px-3 py-2 text-sm">
             </div>
             <div>
-              <label for="machineRate" class="block text-xs font-medium text-muted mb-1">Costo Macchina (€/h)</label>
-              <input id="machineRate" type="number" min="0" step="0.5" value="2" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="machineRate" class="block text-xs font-medium text-muted mb-1">Costo macchina (€/ora)</label>
+              <input id="machineRate" type="number" min="0" step="0.5" value="1" class="w-full rounded-lg px-3 py-2 text-sm">
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label for="filePrepCost" class="block text-xs font-medium text-muted mb-1">Preparazione File (€)</label>
-              <input id="filePrepCost" type="number" min="0" step="1" value="5" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="waste" class="block text-xs font-medium text-muted mb-1">Scarto resina (%)</label>
+              <input id="waste" type="number" min="0" step="1" value="10" class="w-full rounded-lg px-3 py-2 text-sm">
             </div>
             <div>
-              <label for="waste" class="block text-xs font-medium text-muted mb-1">Scarto Resina (%)</label>
-              <input id="waste" type="number" min="0" step="1" value="10" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="printMarkup" class="block text-xs font-medium text-gold mb-1">Margine di guadagno (%)</label>
+              <input id="printMarkup" type="number" min="0" step="5" value="50" class="w-full rounded-lg px-3 py-2 text-sm font-bold text-gold">
+            </div>
+            <div>
+              <label for="printDiscount" class="block text-xs font-medium text-muted mb-1">Sconto stampa 3D (%)</label>
+              <input id="printDiscount" type="number" min="0" max="100" step="1" value="0" class="w-full rounded-lg px-3 py-2 text-sm">
             </div>
           </div>
 
-          <!-- Post-Produzione & Consumabili -->
-          <div class="p-3 bg-darkbg/40 border border-line rounded-xl space-y-3">
-            <span class="text-xs font-bold text-gold uppercase tracking-wider block"><i class="fa-solid fa-wand-magic-sparkles"></i> Post-Produzione & Consumabili</span>
-            <div class="grid grid-cols-3 gap-2">
-              <div>
-                <label for="postHours" class="block text-[11px] text-muted mb-1">Ore Post-Prod.</label>
-                <input id="postHours" type="number" min="0" step="0.25" value="0.5" class="w-full rounded-lg px-2.5 py-2 text-sm">
-              </div>
-              <div>
-                <label for="postRate" class="block text-[11px] text-muted mb-1">Tariffa (€/h)</label>
-                <input id="postRate" type="number" min="0" step="1" value="25" class="w-full rounded-lg px-2.5 py-2 text-sm">
-              </div>
-              <div>
-                <label for="consumables" class="block text-[11px] text-muted mb-1">Alcol/Altro (€)</label>
-                <input id="consumables" type="number" min="0" step="0.5" value="3" class="w-full rounded-lg px-2.5 py-2 text-sm">
-              </div>
-            </div>
-          </div>
-
-          <!-- Margine / Ricarico Vendita Stampa -->
-          <div>
-            <label for="printMarkup" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-chart-line"></i> Margine / Ricarico Vendita Stampa (%)</label>
-            <input id="printMarkup" type="number" min="0" step="10" value="50" class="w-full rounded-lg px-3 py-2.5 text-sm font-bold text-gold">
-          </div>
-
-          <!-- Breakdown Costi -->
+          <!-- Box Costi di Produzione -->
           <div class="bg-darkbg/80 p-4 rounded-xl border border-line/60 space-y-2 text-xs">
+            <span class="text-xs font-bold text-gold uppercase tracking-wider block border-b border-line/40 pb-1 mb-2">Costi di Produzione</span>
             <div class="flex justify-between items-center text-muted">
-              <span>Costo Vivo Totale (Produzione):</span>
-              <strong id="printCostPure" class="text-white text-sm font-semibold">€ 0,00</strong>
+              <span>Costo totale resina:</span>
+              <strong id="costResinOnly" class="text-white font-semibold">€ 0,00</strong>
             </div>
             <div class="flex justify-between items-center text-muted">
-              <span>Ricarico Vendita Applicato:</span>
-              <strong id="printMarkupDetail" class="text-gold text-sm font-semibold">+50%</strong>
+              <span>Costo dello scarto:</span>
+              <strong id="costWasteOnly" class="text-white font-semibold">€ 0,00</strong>
+            </div>
+            <div class="flex justify-between items-center text-muted">
+              <span>Costo macchina:</span>
+              <strong id="costMachineOnly" class="text-white font-semibold">€ 0,00</strong>
+            </div>
+            <div class="flex justify-between items-center text-muted pt-2 border-t border-line/40">
+              <span>Costo totale produzione:</span>
+              <strong id="printCostPure" class="text-emeraldCustom text-sm font-semibold">€ 0,00</strong>
+            </div>
+            <div class="flex justify-between items-center text-muted">
+              <span>Costo effettivo / pezzo:</span>
+              <strong id="costPerPiece" class="text-gray-300 font-semibold">€ 0,00</strong>
             </div>
           </div>
 
-          <!-- Prezzo Vendita Stampa 3D Finale -->
-          <div class="mt-4 p-4 bg-panel2 border border-gold/30 rounded-xl flex items-center justify-between">
+          <!-- Prezzo Finale Vendita Stampa -->
+          <div class="p-4 bg-panel2 border border-gold/30 rounded-xl flex items-center justify-between">
             <div>
-              <span class="text-sm font-semibold text-white block">Prezzo Vendita Stampa 3D</span>
-              <span class="text-[10px] text-muted">Costo vivo + Preparazione + Post-prod + Ricarico</span>
+              <span class="text-sm font-semibold text-white block">Prezzo di Vendita Stampa 3D</span>
+              <span class="text-[11px] text-muted">Costo di produzione + Margine applicato</span>
             </div>
             <span id="printSubtotal" class="text-2xl font-bold text-gold">€ 0,00</span>
           </div>
@@ -405,10 +410,10 @@
           <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line/80 pb-4 mb-4">
             <div>
               <span class="text-xs uppercase tracking-wider font-semibold text-gold">Proposta Economica Finale</span>
-              <h2 class="text-xl font-bold text-white tracking-tight">Riepilogo Generale Preventivo</h2>
+              <h2 class="text-xl font-bold text-white tracking-tight">Prezzo Totale di Vendita al Cliente</h2>
             </div>
             <div class="text-right">
-              <span class="text-xs text-muted block">TOTALE COMPLESSIVO (IVA Escl.)</span>
+              <span class="text-xs text-muted block">PREZZO FINALE (IVA Escl.)</span>
               <span id="total" class="text-3xl sm:text-4xl font-extrabold text-gold2 tracking-tight">€ 0,00</span>
             </div>
           </div>
@@ -443,50 +448,58 @@
 
   <script>
     const $ = id => document.getElementById(id);
-    const inputIds = ['hours','rate','complexity','revisions','urgency','grams','resinPrice','printHours','machineRate','filePrepCost','consumables','waste','postHours','postRate','printMarkup','printQty'];
+    const inputIds = ['hours','rate','complexity','revisions','urgency','cadDiscount','grams','resinPrice','printHours','machineRate','waste','printMarkup','printDiscount','printQty'];
     let photoData = '';
+
+    const formatEuro = num => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(num || 0);
 
     function calculate() {
       // 1. Modellazione CAD
       const cadBase = (Number($('hours').value) || 0) * (Number($('rate').value) || 0);
-      const cad = cadBase * (1 + (Number($('complexity').value) || 0) / 100) * (1 + (Number($('urgency').value) || 0) / 100);
-      
-      // 2. Costo Vivo Stampa 3D
+      let cad = cadBase * (1 + (Number($('complexity').value) || 0) / 100) * (1 + (Number($('urgency').value) || 0) / 100) + (Number($('revisions').value) || 0);
+      const cadDiscount = Number($('cadDiscount').value) || 0;
+      cad = cad * (1 - cadDiscount / 100);
+
+      // 2. Costo Produzione Stampa 3D
       const qty = Math.max(1, Number($('printQty').value) || 1);
       const grams = Number($('grams').value) || 0;
       const resinPrice = Number($('resinPrice').value) || 0;
-      const waste = Number($('waste').value) || 0;
+      const wastePercent = Number($('waste').value) || 0;
       
-      const resinCostWithWaste = (grams / 1000) * resinPrice * (1 + waste / 100);
+      const resinBaseCost = (grams / 1000) * resinPrice;
+      const wasteCost = resinBaseCost * (wastePercent / 100);
+      const totalResinCost = resinBaseCost + wasteCost;
+
       const printHours = Number($('printHours').value) || 0;
       const machineRate = Number($('machineRate').value) || 0;
       const machineCost = printHours * machineRate;
-      
-      const filePrep = Number($('filePrepCost').value) || 0;
-      const postHours = Number($('postHours').value) || 0;
-      const postRate = Number($('postRate').value) || 0;
-      const postCost = postHours * postRate;
-      const consumablesCost = Number($('consumables').value) || 0;
 
-      const printPureCost = (resinCostWithWaste + machineCost + filePrep + postCost + consumablesCost) * qty;
+      const printCostPure = (totalResinCost + machineCost) * qty;
+      const costPerPiece = qty > 0 ? printCostPure / qty : 0;
 
-      // 3. Prezzo Vendita Stampa con Ricarico (%)
+      // 3. Prezzo Vendita Stampa 3D
       const markup = Number($('printMarkup').value) || 0;
-      const printSellPrice = printPureCost * (1 + markup / 100);
+      const printDiscount = Number($('printDiscount').value) || 0;
+      let printSellPrice = printCostPure * (1 + markup / 100);
+      printSellPrice = printSellPrice * (1 - printDiscount / 100);
 
       // Totale Generale
       const total = cad + printSellPrice;
 
-      // Aggiornamento UI
-      $('cadSubtotal').textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(cad);
-      $('printCostPure').textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(printPureCost);
-      if($('printMarkupDetail')) $('printMarkupDetail').textContent = `+${markup}%`;
-      $('printSubtotal').textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(printSellPrice);
-      $('total').textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(total);
+      // Aggiornamento Interfaccia Grafica
+      $('cadSubtotal').textContent = formatEuro(cad);
+      $('costResinOnly').textContent = formatEuro(resinBaseCost * qty);
+      $('costWasteOnly').textContent = formatEuro(wasteCost * qty);
+      $('costMachineOnly').textContent = formatEuro(machineCost * qty);
+      $('printCostPure').textContent = formatEuro(printCostPure);
+      $('costPerPiece').textContent = formatEuro(costPerPiece);
+      $('printSubtotal').textContent = formatEuro(printSellPrice);
+      $('total').textContent = formatEuro(total);
     }
 
     inputIds.forEach(id => { if($(id)) $(id).addEventListener('input', calculate); });
 
+    // Gestione Tab
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => {
@@ -536,7 +549,7 @@
       });
     }
 
-    // Analisi IA Rapida e Funzionante
+    // Logica Stima Euristica Visiva
     if (aiAnalyzeBtn) {
       aiAnalyzeBtn.addEventListener('click', function() {
         if (!photoData) return;
@@ -552,7 +565,7 @@
           $('complexity').value = '40';
           $('grams').value = '5.2';
 
-          aiAnalysisText.textContent = 'Gioiello riconosciuto come Anello. Rilevate geometrie per incassatura e spessori strutturali. Stimate 3.5 ore di modellazione CAD (complessità alta +40%) e ~5.2g di resina calcinabile con margine applicato.';
+          aiAnalysisText.textContent = 'Gioiello riconosciuto come Anello. Rilevate geometrie per incassatura e spessori strutturali. Stimate 3.5 ore di modellazione CAD (complessità alta +40%) e ~5.2g di resina calcinabile.';
           aiResultBox.classList.remove('hidden');
 
           calculate();

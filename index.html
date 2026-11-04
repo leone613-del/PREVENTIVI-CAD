@@ -690,7 +690,7 @@
     };
 
     $('clearArchiveBtn').onclick = () => {
-      if(confirm('Vuoi svuotare tutto l'archivio?')) {
+      if(confirm("Vuoi svuotare tutto l'archivio?")) {
         localStorage.removeItem('cad_archive');
         updateArchiveUI();
       }

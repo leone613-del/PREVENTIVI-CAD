@@ -305,10 +305,9 @@
       </div>
     </section>
 
-    <!-- SECTION 2: STAMPA 3D (Layout identico allo screenshot richiesto) -->
+    <!-- SECTION 2: STAMPA 3D -->
     <section id="print-quote" class="tab-content hidden">
       <div class="max-w-xl mx-auto bg-panel border border-line rounded-2xl p-5 shadow-sm card-print">
-
         <div class="space-y-4">
           <div>
             <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso Resina Stimato (g)</label>
@@ -340,7 +339,7 @@
             <input id="waste" type="number" min="0" step="1" value="10" class="w-full rounded-lg px-3 py-2.5 text-sm">
           </div>
 
-          <!-- Breakdown Costi (Esattamente come nello screenshot) -->
+          <!-- Breakdown Costi -->
           <div class="bg-darkbg/80 p-4 rounded-xl border border-line/60 space-y-2 text-xs mt-4">
             <div class="flex justify-between items-center text-muted">
               <span>Costo Resina Usata (con scarto):</span>
@@ -356,13 +355,12 @@
             </div>
           </div>
 
-          <!-- Sub-totale Stampa 3D (Esattamente come nello screenshot) -->
+          <!-- Sub-totale Stampa 3D -->
           <div class="mt-4 p-4 bg-panel2 border border-gold/30 rounded-xl flex items-center justify-between">
             <span class="text-sm font-semibold text-white">Sub-totale Stampa 3D</span>
             <span id="printSubtotal" class="text-2xl font-bold text-gold">10,65 €</span>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -417,33 +415,22 @@
     const formatEuro = num => (num || 0).toFixed(2).replace('.', ',') + ' €';
 
     function calculate() {
-      // 1. Modellazione CAD
       const cadBase = (Number($('hours').value) || 0) * (Number($('rate').value) || 0);
       const cad = cadBase * (1 + (Number($('complexity').value) || 0) / 100) * (1 + (Number($('urgency').value) || 0) / 100);
       
-      // 2. Stampa 3D (Calcolo esatto corrispondente allo screenshot)
       const grams = Number($('grams').value) || 0;
       const resinPrice = Number($('resinPrice').value) || 0;
       const waste = Number($('waste').value) || 0;
       
-      // Costo Resina Usata (con scarto): (grammi / 1000) * costo_kg * (1 + scarto %)
       const resinCostWithWaste = (grams / 1000) * resinPrice * (1 + waste / 100);
-      
-      // Costo Utilizzo Macchina: ore_stampa * costo_macchina
       const printHours = Number($('printHours').value) || 0;
       const machineRate = Number($('machineRate').value) || 0;
       const machineCost = printHours * machineRate;
-      
-      // Supporti & Consumabili
       const consumablesCost = Number($('consumables').value) || 0;
 
-      // Sub-totale Stampa 3D
       const printTotal = resinCostWithWaste + machineCost + consumablesCost;
-
-      // Totale Generale
       const total = cad + printTotal;
 
-      // Aggiornamento UI
       $('cadSubtotal').textContent = formatEuro(cad);
       $('printResinCostDetail').textContent = formatEuro(resinCostWithWaste);
       $('printMachineCostDetail').textContent = formatEuro(machineCost);
@@ -454,12 +441,13 @@
 
     inputIds.forEach(id => { if($(id)) $(id).addEventListener('input', calculate); });
 
+    // Gestione corretta dei Tab
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => {
           b.className = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line";
         });
-        btn.className = "tab-btn active px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10";
+        btn.className = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10";
 
         const target = btn.dataset.tab;
         document.querySelectorAll('.tab-content').forEach(section => {
@@ -503,7 +491,7 @@
       });
     }
 
-    // Analisi Foto con IA (Gemini Vision Integration)
+    // Analisi Foto con IA (Gemini Vision)
     if (aiAnalyzeBtn) {
       aiAnalyzeBtn.addEventListener('click', async function() {
         if (!photoData) return;
@@ -513,44 +501,17 @@
         aiAnalyzeBtn.disabled = true;
 
         try {
-          const apiKey = "";
+          const apiKey = ""; // Inserisci qui la tua chiave API se desideri l'analisi IA live
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
           
           const base64Data = photoData.split(',')[1];
           const mimeType = photoData.substring(photoData.indexOf(':') + 1, photoData.indexOf(';'));
 
           const systemPrompt = "Sei un maestro orafo e modellista CAD esperto di stampa 3D per gioielleria. Analizza l'immagine fornita del gioiello ed estrai dati stimati per la modellazione 3D e la stampa calcinabile.";
-          const userPrompt = "Analizza l'immagine del gioiello e restituisci la risposta IN FORMATO JSON STRETTO con queste proprietà:
-" +
-            "- jewelType: string (scelta tra: Anello, Fede, Orecchini, Pendente, Bracciale, Collana, Spilla, Altro)
-" +
-            "- description: string (descrizione delle caratteristiche geometriche, griffe, pavé o lavorazioni)
-" +
-            "- hours: number (ore CAD stimate tra 1 e 12)
-" +
-            "- complexity: number (valore esatto tra 0, 20, 40, 60, 100 in base alla difficoltà)
-" +
-            "- grams: number (peso resina stimato in grammi con supporti, es. 6)
-" +
-            "- printHours: number (ore di stampa stimate, es. 3)
-" +
-            "- aiNotes: string (breve sintesi orafa sul perché di questa stima)";
+          const userPrompt = "Analizza l'immagine del gioiello e restituisci la risposta IN FORMATO JSON STRETTO con queste proprietà:\n- jewelType: string\n- description: string\n- hours: number\n- complexity: number\n- grams: number\n- printHours: number\n- aiNotes: string";
 
           const payload = {
-            contents: [
-              {
-                role: "user",
-                parts: [
-                  { text: userPrompt },
-                  {
-                    inlineData: {
-                      mimeType: mimeType,
-                      data: base64Data
-                    }
-                  }
-                ]
-              }
-            ],
+            contents: [{ role: "user", parts: [{ text: userPrompt }, { inlineData: { mimeType: mimeType, data: base64Data } }] }],
             systemInstruction: { parts: [{ text: systemPrompt }] },
             generationConfig: {
               responseMimeType: "application/json",
@@ -590,7 +551,6 @@
 
             aiAnalysisText.textContent = aiData.aiNotes || "Analisi completata con successo.";
             aiResultBox.classList.remove('hidden');
-
             calculate();
           }
         } catch (err) {

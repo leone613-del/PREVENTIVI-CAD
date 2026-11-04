@@ -35,6 +35,32 @@
   }
 </script>
 
+<!-- Dynamic Web App Manifest -->
+<script>
+  const manifestData = {
+    "name": "CAD Jewelry Price",
+    "short_name": "JewelryCAD",
+    "description": "Preventivi per modellazione CAD 3D e stampa resina Castable",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#0f1013",
+    "theme_color": "#121316",
+    "icons": [
+      {
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23c9a86a'><path d='M256 32L32 192l224 288 224-288L256 32zm0 68l140 100H116L256 100zm-152 132h304L256 420 104 232z'/></svg>",
+        "sizes": "512x512",
+        "type": "image/svg+xml"
+      }
+    ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+  const manifestURL = URL.createObjectURL(manifestBlob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = manifestURL;
+  document.head.appendChild(link);
+</script>
+
 <!-- Font Awesome icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -112,8 +138,15 @@
           <span class="text-[10px] tracking-widest text-gold uppercase font-bold block">Jewelry CAD · Studio Tools</span>
           <h1 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             CAD Jewelry Price
+            <span id="pwaBadge" class="hidden text-[10px] bg-gold/20 text-gold border border-gold/30 px-2 py-0.5 rounded-full font-medium">PWA</span>
           </h1>
         </div>
+      </div>
+
+      <div class="flex items-center gap-2 no-print">
+        <button id="installPwaBtn" class="hidden text-xs bg-gold/10 hover:bg-gold/20 text-gold border border-gold/40 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Installa App</span>
+        </button>
       </div>
     </div>
   </header>
@@ -141,7 +174,7 @@
     </nav>
 
     <!-- SECTION 1: PREVENTIVO CAD 3D -->
-    <section id="cad-quote" class="tab-content">
+    <section id="cad-quote" class="tab-content block">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- CARD 1 -->
@@ -278,132 +311,96 @@
       </div>
     </section>
 
-    <!-- SECTION 2: PREVENTIVO STAMPA 3D -->
+    <!-- SECTION 2: STAMPA 3D -->
     <section id="print-quote" class="tab-content hidden">
-      <div class="max-w-4xl mx-auto space-y-6">
+      <div class="max-w-2xl mx-auto space-y-6">
         
         <!-- Input Parametri Stampa -->
-        <div class="bg-panel border border-line rounded-2xl p-6 shadow-sm card-print">
-          <h2 class="text-base font-semibold text-white mb-4 flex items-center gap-2 border-b border-line/60 pb-2">
+        <div class="bg-panel border border-line rounded-2xl p-5 shadow-sm card-print space-y-4">
+          <h2 class="text-base font-semibold text-white mb-2 flex items-center gap-2 border-b border-line/60 pb-2">
             <i class="fa-solid fa-print text-gold"></i> Parametri di Stampa 3D
           </h2>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 bg-gold/10 border border-gold/30 rounded-xl sm:col-span-2">
+              <label for="printQty" class="block text-xs font-bold text-gold mb-1"><i class="fa-solid fa-boxes-stacked"></i> Numero di Pezzi da Stampare</label>
+              <input id="printQty" type="number" min="1" step="1" value="1" class="w-full rounded-lg px-3 py-2.5 text-sm font-bold text-white">
+            </div>
+
             <div>
-              <label for="printQty" class="block text-xs font-medium text-muted mb-1">Numero di pezzi</label>
-              <input id="printQty" type="number" min="1" step="1" value="9" class="w-full rounded-lg px-3 py-2.5 text-sm font-bold text-white">
+              <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso Totale Resina (g)</label>
+              <input id="grams" type="number" min="0" step="0.1" value="6" class="w-full rounded-lg px-3 py-2.5 text-sm">
             </div>
             <div>
-              <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso totale resina (g)</label>
-              <input id="grams" type="number" min="0" step="0.1" value="200" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="resinPrice" class="block text-xs font-medium text-muted mb-1">Costo Resina (€/kg)</label>
+              <input id="resinPrice" type="number" min="0" step="1" value="250" class="w-full rounded-lg px-3 py-2.5 text-sm">
+            </div>
+
+            <div>
+              <label for="printHours" class="block text-xs font-medium text-muted mb-1">Tempo Totale Stampa (Ore)</label>
+              <input id="printHours" type="number" min="0" step="0.25" value="3" class="w-full rounded-lg px-3 py-2.5 text-sm">
             </div>
             <div>
-              <label for="resinPrice" class="block text-xs font-medium text-muted mb-1">Costo resina (€/kg)</label>
-              <input id="resinPrice" type="number" min="0" step="1" value="150" class="w-full rounded-lg px-3 py-2.5 text-sm">
+              <label for="machineRate" class="block text-xs font-medium text-muted mb-1">Costo Macchina (€/h)</label>
+              <input id="machineRate" type="number" min="0" step="0.5" value="2" class="w-full rounded-lg px-3 py-2.5 text-sm">
             </div>
+
             <div>
-              <label for="printHours" class="block text-xs font-medium text-muted mb-1">Tempo totale stampa (ore)</label>
-              <input id="printHours" type="number" min="0" step="0.25" value="12" class="w-full rounded-lg px-3 py-2.5 text-sm">
-            </div>
-            <div>
-              <label for="machineRate" class="block text-xs font-medium text-muted mb-1">Costo macchina (€/ora)</label>
-              <input id="machineRate" type="number" min="0" step="0.5" value="3" class="w-full rounded-lg px-3 py-2.5 text-sm">
-            </div>
-            <div>
-              <label for="waste" class="block text-xs font-medium text-muted mb-1">Scarto resina (%)</label>
+              <label for="waste" class="block text-xs font-medium text-muted mb-1">Scarto Resina (%)</label>
               <input id="waste" type="number" min="0" step="1" value="10" class="w-full rounded-lg px-3 py-2.5 text-sm">
             </div>
             <div>
-              <label for="printMargin" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-chart-line"></i> Margine di guadagno (%)</label>
-              <input id="printMargin" type="number" min="0" step="5" value="50" class="w-full rounded-lg px-3 py-2.5 text-sm font-bold text-gold">
+              <label for="markup" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-chart-line"></i> Margine di Guadagno (%)</label>
+              <input id="markup" type="number" min="0" step="1" value="50" class="w-full rounded-lg px-3 py-2.5 text-sm font-semibold">
             </div>
-            <div>
-              <label for="printDiscount" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-percent"></i> Sconto stampa 3D (%)</label>
-              <input id="printDiscount" type="number" min="0" max="100" step="1" value="0" class="w-full rounded-lg px-3 py-2.5 text-sm font-semibold text-gold">
+
+            <div class="sm:col-span-2">
+              <label for="printDiscount" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-percent"></i> Sconto Stampa 3D (%)</label>
+              <input id="printDiscount" type="number" min="0" max="100" step="1" value="0" class="w-full rounded-lg px-3 py-2.5 text-sm font-semibold">
             </div>
           </div>
         </div>
 
-        <!-- RISULTATI (3 Sezioni Distinte) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Sezioni Risultati Dettagliati -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           
-          <!-- Sezione 1: Costi di Produzione -->
-          <div class="bg-panel border border-line rounded-2xl p-5 shadow-sm card-print flex flex-col justify-between">
-            <div>
-              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-line/60 pb-2">
-                <i class="fa-solid fa-coins text-gold"></i> Costi di Produzione
-              </h3>
-              <div class="space-y-2.5 text-xs">
-                <div class="flex justify-between items-center text-muted">
-                  <span>Costo totale resina:</span>
-                  <strong id="resTotalCost" class="text-white">€ 0,00</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted">
-                  <span>Costo dello scarto:</span>
-                  <strong id="resWasteCost" class="text-white">€ 0,00</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted">
-                  <span>Costo macchina:</span>
-                  <strong id="machTotalCost" class="text-white">€ 0,00</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted pt-2 border-t border-line/40">
-                  <span>Costo totale produzione:</span>
-                  <strong id="prodTotalCost" class="text-gold font-semibold">€ 0,00</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted">
-                  <span>Costo effettivo / pezzo:</span>
-                  <strong id="prodUnitCost" class="text-white font-semibold">€ 0,00</strong>
-                </div>
-              </div>
+          <!-- 1. Costi di Produzione -->
+          <div class="bg-panel border border-line rounded-2xl p-4 space-y-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-muted border-b border-line pb-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-file-invoice-dollar text-gold"></i> 1. Costi Produzione
+            </h3>
+            <div class="text-xs space-y-1.5 text-gray-300">
+              <div class="flex justify-between"><span>Costo resina:</span> <strong id="resResinCost" class="text-white">0,00 €</strong></div>
+              <div class="flex justify-between"><span>Costo scarto:</span> <strong id="resWasteCost" class="text-white">0,00 €</strong></div>
+              <div class="flex justify-between"><span>Costo macchina:</span> <strong id="resMachineCost" class="text-white">0,00 €</strong></div>
+              <div class="flex justify-between border-t border-line/60 pt-1 font-semibold"><span>Tot. Produzione:</span> <strong id="resTotalProdCost" class="text-gold">0,00 €</strong></div>
+              <div class="flex justify-between border-t border-line/60 pt-1"><span>Costo effettivo/cad:</span> <strong id="resUnitProdCost" class="text-white">0,00 €</strong></div>
             </div>
           </div>
 
-          <!-- Sezione 2: Prezzi di Vendita -->
-          <div class="bg-panel border border-line rounded-2xl p-5 shadow-sm card-print flex flex-col justify-between">
-            <div>
-              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-line/60 pb-2">
-                <i class="fa-solid fa-tags text-gold"></i> Prezzi di Vendita
-              </h3>
-              <div class="space-y-2.5 text-xs">
-                <div class="flex justify-between items-center text-muted">
-                  <span>Prezzo vendita / pezzo:</span>
-                  <strong id="sellUnitBefore" class="text-white">€ 0,00</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted">
-                  <span>Sconto applicato:</span>
-                  <strong id="sellDiscountVal" class="text-roseCustom">0%</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted pt-2 border-t border-line/40">
-                  <span>Prezzo finale / pezzo:</span>
-                  <strong id="sellUnitFinal" class="text-gold font-bold text-sm">€ 0,00</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted pt-1">
-                  <span>Totale ordine (tutti i pezzi):</span>
-                  <strong id="sellOrderTotal" class="text-gold2 font-extrabold text-base">€ 0,00</strong>
-                </div>
-              </div>
+          <!-- 2. Prezzi di Vendita -->
+          <div class="bg-panel border border-line rounded-2xl p-4 space-y-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-muted border-b border-line pb-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-tag text-gold"></i> 2. Prezzi Vendita
+            </h3>
+            <div class="text-xs space-y-1.5 text-gray-300">
+              <div class="flex justify-between"><span>Prezzo unitario:</span> <strong id="resUnitSalePrice" class="text-white">0,00 €</strong></div>
+              <div class="flex justify-between"><span>Sconto applicato:</span> <strong id="resAppliedDiscount" class="text-roseCustom">0%</strong></div>
+              <div class="flex justify-between border-t border-line/60 pt-1 font-semibold"><span>Prezzo finale/cad:</span> <strong id="resFinalUnitSalePrice" class="text-gold">15,00 €</strong></div>
+              <div class="flex justify-between border-t border-line/60 pt-1 font-bold"><span>Totale Ordine:</span> <strong id="printSubtotal" class="text-gold2 text-sm">0,00 €</strong></div>
             </div>
           </div>
 
-          <!-- Sezione 3: Guadagno -->
-          <div class="bg-panel border border-line rounded-2xl p-5 shadow-sm card-print flex flex-col justify-between">
-            <div>
-              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-line/60 pb-2">
-                <i class="fa-solid fa-chart-line text-emeraldCustom"></i> Guadagno
-              </h3>
-              <div class="space-y-2.5 text-xs">
-                <div class="flex justify-between items-center text-muted">
-                  <span>Guadagno totale ordine:</span>
-                  <strong id="profitTotal" class="text-emeraldCustom font-bold text-sm">€ 0,00</strong>
-                </div>
-                <div class="flex justify-between items-center text-muted">
-                  <span>Guadagno effettivo / pezzo:</span>
-                  <strong id="profitUnit" class="text-emeraldCustom font-semibold">€ 0,00</strong>
-                </div>
+          <!-- 3. Guadagno -->
+          <div class="bg-panel border border-gold/30 rounded-2xl p-4 space-y-2.5 bg-gradient-to-b from-panel to-panel2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gold border-b border-line pb-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-pie text-gold"></i> 3. Guadagno Effettivo
+            </h3>
+            <div class="text-xs space-y-2 text-gray-300">
+              <div class="flex justify-between"><span>Guadagno unitario:</span> <strong id="resUnitProfit" class="text-emeraldCustom">0,00 €</strong></div>
+              <div class="flex justify-between border-t border-line/60 pt-1 text-sm font-bold">
+                <span>Guadagno Ordine:</span> <strong id="resTotalProfit" class="text-emeraldCustom text-base">0,00 €</strong>
               </div>
-            </div>
-            <div class="mt-4 pt-3 border-t border-line/40 text-[11px] text-muted italic">
-              * Prezzo minimo garantito: € 15,00 / pezzo.
             </div>
           </div>
 
@@ -423,33 +420,11 @@
             </div>
             <div class="text-right">
               <span class="text-xs text-muted block">TOTALE COMPLESSIVO (IVA Escl.)</span>
-              <span id="total" class="text-3xl sm:text-4xl font-extrabold text-gold2 tracking-tight">€ 0,00</span>
-            </div>
-          </div>
-
-          <div class="space-y-4 text-sm text-gray-300 mt-4">
-            <div class="flex justify-between border-b border-line/50 pb-2">
-              <span>Progetto:</span>
-              <strong id="sumProject" class="text-white">-</strong>
-            </div>
-            <div class="flex justify-between border-b border-line/50 pb-2">
-              <span>Cliente:</span>
-              <strong id="sumClient" class="text-white">-</strong>
-            </div>
-            <div class="flex justify-between border-b border-line/50 pb-2">
-              <span>Totale Modellazione CAD:</span>
-              <strong id="sumCad" class="text-gold">€ 0,00</strong>
-            </div>
-            <div class="flex justify-between border-b border-line/50 pb-2">
-              <span>Totale Stampa 3D:</span>
-              <strong id="sumPrint" class="text-gold">€ 0,00</strong>
+              <span id="total" class="text-3xl sm:text-4xl font-extrabold text-gold2 tracking-tight">0,00 €</span>
             </div>
           </div>
 
           <div class="flex flex-wrap gap-2.5 mt-6 pt-4 border-t border-line/60 no-print">
-            <button id="saveArchiveBtn" class="flex-1 min-w-[140px] bg-gold hover:bg-goldhover text-darkbg font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-floppy-disk"></i> Salva in Archivio
-            </button>
             <button id="pdfBtn" class="flex-1 min-w-[140px] bg-panel3 hover:bg-line text-white border border-line font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2" onclick="window.print()">
               <i class="fa-solid fa-print text-gold"></i> Stampa / PDF
             </button>
@@ -461,50 +436,17 @@
       </div>
     </section>
 
-    <!-- SECTION 4: LISTINO PERSONALE -->
+    <!-- SECTION 4: LISTINO -->
     <section id="settings" class="tab-content hidden">
-      <div class="bg-panel border border-line rounded-2xl p-6 max-w-3xl mx-auto shadow-md space-y-6">
-        <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2"><i class="fa-solid fa-sliders text-gold"></i> Listino e Tariffe predefinite</h2>
-        <p class="text-xs text-muted">Imposta i tuoi valori di default per resina, tariffe orarie e margini, quindi salvali nel browser.</p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-medium text-muted mb-1">Tariffa Oraria CAD (€/h)</label>
-            <input id="defRate" type="number" value="30" class="w-full rounded-lg px-3 py-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-muted mb-1">Costo Macchina Stampa (€/h)</label>
-            <input id="defMachineRate" type="number" value="3" class="w-full rounded-lg px-3 py-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-muted mb-1">Costo Resina (€/kg)</label>
-            <input id="defResinPrice" type="number" value="150" class="w-full rounded-lg px-3 py-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-muted mb-1">Margine di guadagno stampa (%)</label>
-            <input id="defMargin" type="number" value="50" class="w-full rounded-lg px-3 py-2 text-sm">
-          </div>
-        </div>
-
-        <button id="saveSettingsBtn" class="w-full bg-gold hover:bg-goldhover text-darkbg font-bold py-3 rounded-xl transition shadow-lg text-sm">
-          <i class="fa-solid fa-check"></i> Salva Preferenze Listino
-        </button>
+      <div class="bg-panel border border-line rounded-2xl p-6 max-w-3xl mx-auto shadow-md">
+        <h2 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-sliders text-gold"></i> Listino</h2>
       </div>
     </section>
 
     <!-- SECTION 5: ARCHIVIO -->
     <section id="archive" class="tab-content hidden">
-      <div class="bg-panel border border-line rounded-2xl p-6 shadow-md space-y-4">
-        <div class="flex items-center justify-between border-b border-line/60 pb-3">
-          <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-box-archive text-gold"></i> Archivio Preventivi Salvati</h2>
-          <button id="clearArchiveBtn" class="text-xs bg-roseCustom/10 text-roseCustom hover:bg-roseCustom/20 px-3 py-1.5 rounded-lg border border-roseCustom/30 transition">
-            <i class="fa-solid fa-trash"></i> Svuota Archivio
-          </button>
-        </div>
-
-        <div id="archiveList" class="space-y-3">
-          <p class="text-xs text-muted text-center py-6">Nessun preventivo salvato in archivio.</p>
-        </div>
+      <div class="bg-panel border border-line rounded-2xl p-6 shadow-md">
+        <h2 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-box-archive text-gold"></i> Archivio</h2>
       </div>
     </section>
 
@@ -512,14 +454,10 @@
 
   <script>
     const $ = id => document.getElementById(id);
-    const inputIds = [
-      'hours','rate','complexity','revisions','urgency','cadDiscount',
-      'printQty','grams','resinPrice','printHours','machineRate','waste','printMargin','printDiscount',
-      'project','client'
-    ];
+    const inputIds = ['hours','rate','complexity','revisions','urgency','cadDiscount','grams','resinPrice','printHours','machineRate','waste','markup','printQty','printDiscount'];
     let photoData = '';
 
-    const formatEuro = num => (num || 0).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+    const formatEuro = num => (num || 0).toFixed(2).replace('.', ',') + ' €';
 
     function calculate() {
       // 1. Modellazione CAD con Sconto %
@@ -528,175 +466,186 @@
       const cadDiscount = Number($('cadDiscount').value) || 0;
       const cad = cadBeforeDiscount * (1 - cadDiscount / 100);
 
-      // 2. Calcoli Stampa 3D
-      const qty = Math.max(1, parseInt($('printQty').value) || 1);
+      // 2. Stampa 3D
+      const qty = Math.max(1, Number($('printQty').value) || 1);
       const grams = Number($('grams').value) || 0;
-      const resinPriceKg = Number($('resinPrice').value) || 0;
+      const resinPricePerKg = Number($('resinPrice').value) || 0;
+      const wastePercent = Number($('waste').value) || 0;
       const printHours = Number($('printHours').value) || 0;
       const machineRate = Number($('machineRate').value) || 0;
-      const wastePercent = Number($('waste').value) || 0;
-      const marginPercent = Number($('printMargin').value) || 0;
-      const printDiscount = Number($('printDiscount').value) || 0;
+      const markupPercent = Number($('markup').value) || 0;
+      const discountPercent = Number($('printDiscount').value) || 0;
 
-      // Costi di Produzione (sull'intera stampa)
-      const resPureCost = (grams / 1000) * resinPriceKg;
-      const resWasteCost = resPureCost * (wastePercent / 100);
-      const resTotalCost = resPureCost + resWasteCost;
-      const machTotalCost = printHours * machineRate;
-      const prodTotalCost = resTotalCost + machTotalCost;
-      const prodUnitCost = prodTotalCost / qty;
+      // Costi totali di produzione
+      const totalResinCost = (grams / 1000) * resinPricePerKg;
+      const totalWasteCost = totalResinCost * (wastePercent / 100);
+      const resinWithWaste = totalResinCost + totalWasteCost;
+      const totalMachineCost = printHours * machineRate;
+      const totalProdCost = resinWithWaste + totalMachineCost;
 
-      // Prezzo di Vendita Unitario (con Margine e Minimo 15€)
-      const sellUnitBeforeMargin = prodUnitCost * (1 + marginPercent / 100);
-      const sellUnitBeforeDiscount = Math.max(15, sellUnitBeforeMargin);
+      // Costo di produzione per singolo pezzo
+      const unitProdCost = totalProdCost / qty;
 
-      // Sconto Quantità / Stampa (con limite minimo 15€)
-      const sellUnitFinal = Math.max(15, sellUnitBeforeDiscount * (1 - printDiscount / 100));
-      const sellOrderTotal = sellUnitFinal * qty;
+      // Prezzo di vendita unitario (con margine e minimo di 15€)
+      const rawUnitSalePrice = unitProdCost * (1 + markupPercent / 100);
+      const unitSalePrice = Math.max(15, rawUnitSalePrice);
 
-      // Guadagno
-      const profitTotal = sellOrderTotal - prodTotalCost;
-      const profitUnit = profitTotal / qty;
+      // Sconto applicato (con minimo di 15€ per pezzo)
+      const discountedUnitSalePrice = unitSalePrice * (1 - discountPercent / 100);
+      const finalUnitSalePrice = Math.max(15, discountedUnitSalePrice);
 
-      // Aggiornamento UI CAD
+      // Totali ordine e guadagni
+      const printTotal = finalUnitSalePrice * qty;
+      const totalRevenue = printTotal;
+      const totalProfit = totalRevenue - totalProdCost;
+      const unitProfit = totalProfit / qty;
+
+      // Aggiornamento UI Stampa 3D
+      $('resResinCost').textContent = formatEuro(totalResinCost);
+      $('resWasteCost').textContent = formatEuro(totalWasteCost);
+      $('resTotalProdCost').textContent = formatEuro(totalProdCost);
+      $('resMachineCost').textContent = formatEuro(totalMachineCost);
+      $('resUnitProdCost').textContent = formatEuro(unitProdCost);
+
+      $('resUnitSalePrice').textContent = formatEuro(unitSalePrice);
+      if($('resAppliedDiscount')) $('resAppliedDiscount').textContent = discountPercent + '%';
+      $('resFinalUnitSalePrice').textContent = formatEuro(finalUnitSalePrice);
+      $('printSubtotal').textContent = formatEuro(printTotal);
+
+      $('resUnitProfit').textContent = formatEuro(unitProfit);
+      $('resTotalProfit').textContent = formatEuro(totalProfit);
+
+      // Totale Generale
+      const total = cad + printTotal;
+
+      // Aggiornamento UI Generale
       $('cadSubtotal').textContent = formatEuro(cad);
-
-      // Aggiornamento UI Stampa - Costi di Produzione
-      $('resTotalCost').textContent = formatEuro(resTotalCost);
-      $('resWasteCost').textContent = formatEuro(resWasteCost);
-      $('machTotalCost').textContent = formatEuro(machTotalCost);
-      $('prodTotalCost').textContent = formatEuro(prodTotalCost);
-      $('prodUnitCost').textContent = formatEuro(prodUnitCost);
-
-      // Aggiornamento UI Stampa - Prezzi di Vendita
-      $('sellUnitBefore').textContent = formatEuro(sellUnitBeforeDiscount);
-      $('sellDiscountVal').textContent = printDiscount + '%';
-      $('sellUnitFinal').textContent = formatEuro(sellUnitFinal);
-      $('sellOrderTotal').textContent = formatEuro(sellOrderTotal);
-
-      // Aggiornamento UI Stampa - Guadagno
-      $('profitTotal').textContent = formatEuro(profitTotal);
-      $('profitUnit').textContent = formatEuro(profitUnit);
-
-      // Totale Generale (CAD + Stampa 3D)
-      const total = cad + sellOrderTotal;
       $('total').textContent = formatEuro(total);
-
-      // Riepilogo
-      $('sumProject').textContent = $('project').value || 'Senza nome';
-      $('sumClient').textContent = $('client').value || 'Generico';
-      $('sumCad').textContent = formatEuro(cad);
-      $('sumPrint').textContent = formatEuro(sellOrderTotal);
     }
 
     inputIds.forEach(id => { if($(id)) $(id).addEventListener('input', calculate); });
 
-    // Gestione Tab Navigazione
-    const inactiveBtnClass = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line";
-    const activeBtnClass = "tab-btn active px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10";
-
+    // Gestione Tab
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => {
-          b.className = inactiveBtnClass;
+          b.className = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line";
         });
-        btn.className = activeBtnClass;
+        btn.className = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10";
 
-        const target = btn.getAttribute('data-tab');
+        const target = btn.dataset.tab;
         document.querySelectorAll('.tab-content').forEach(section => {
-          if (section.id === target) {
-            section.classList.remove('hidden');
-            section.classList.add('block');
-          } else {
-            section.classList.remove('block');
-            section.classList.add('hidden');
-          }
+          section.classList.toggle('hidden', section.id !== target);
         });
-      });
+      };
     });
 
-    // Listino Personale Salvataggio
-    $('saveSettingsBtn').onclick = () => {
-      localStorage.setItem('cad_def_rate', $('defRate').value);
-      localStorage.setItem('cad_def_mach', $('defMachineRate').value);
-      localStorage.setItem('cad_def_resin', $('defResinPrice').value);
-      localStorage.setItem('cad_def_margin', $('defMargin').value);
+    // Gestione Foto & Anteprima
+    const photoInput = document.getElementById('photo');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImg = document.getElementById('preview');
+    const removePhotoBtn = document.getElementById('removePhotoBtn');
+    const aiAnalyzeBtn = document.getElementById('aiAnalyzeBtn');
+    const aiResultBox = document.getElementById('aiResultBox');
+    const aiAnalysisText = document.getElementById('aiAnalysisText');
 
-      $('rate').value = $('defRate').value;
-      $('machineRate').value = $('defMachineRate').value;
-      $('resinPrice').value = $('defResinPrice').value;
-      $('printMargin').value = $('defMargin').value;
-      calculate();
-      alert('Preferenze di listino salvate e applicate con successo!');
-    };
-
-    // Carica Listino al avvio se presente
-    if(localStorage.getItem('cad_def_rate')) {
-      $('defRate').value = localStorage.getItem('cad_def_rate');
-      $('defMachineRate').value = localStorage.getItem('cad_def_mach');
-      $('defResinPrice').value = localStorage.getItem('cad_def_resin');
-      $('defMargin').value = localStorage.getItem('cad_def_margin');
-
-      $('rate').value = $('defRate').value;
-      $('machineRate').value = $('defMachineRate').value;
-      $('resinPrice').value = $('defResinPrice').value;
-      $('printMargin').value = $('defMargin').value;
+    if (photoInput) {
+      photoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            photoData = evt.target.result;
+            previewImg.src = photoData;
+            previewContainer.classList.remove('hidden');
+            aiResultBox.classList.add('hidden');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
     }
 
-    // Gestione Archivio
-    function updateArchiveUI() {
-      const archive = JSON.parse(localStorage.getItem('cad_archive') || '[]');
-      $('archiveBadge').textContent = archive.length;
-      const list = $('archiveList');
-      if (archive.length === 0) {
-        list.innerHTML = '<p class="text-xs text-muted text-center py-6">Nessun preventivo salvato in archivio.</p>';
-        return;
-      }
-      list.innerHTML = archive.map((item, idx) => `
-        <div class="bg-panel2 border border-line rounded-xl p-4 flex items-center justify-between text-xs">
-          <div>
-            <strong class="text-white text-sm block">${item.project || 'Progetto senza nome'}</strong>
-            <span class="text-muted">Cliente: ${item.client || 'N/D'} · Data: ${item.date}</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="text-gold font-bold text-sm">${formatEuro(item.total)}</span>
-            <button onclick="deleteArchiveItem(${idx})" class="bg-roseCustom/10 hover:bg-roseCustom/20 text-roseCustom p-2 rounded-lg transition">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
+    if (removePhotoBtn) {
+      removePhotoBtn.addEventListener('click', function() {
+        photoInput.value = '';
+        previewImg.src = '';
+        photoData = '';
+        previewContainer.classList.add('hidden');
+        aiResultBox.classList.add('hidden');
+      });
     }
 
-    $('saveArchiveBtn').onclick = () => {
-      const archive = JSON.parse(localStorage.getItem('cad_archive') || '[]');
-      const newItem = {
-        project: $('project').value || 'Progetto senza nome',
-        client: $('client').value || 'Generico',
-        date: new Date().toLocaleDateString('it-IT'),
-        total: parseFloat($('total').textContent.replace('€', '').replace(/\./g, '').replace(',', '.')) || 0
-      };
-      archive.unshift(newItem);
-      localStorage.setItem('cad_archive', JSON.stringify(archive));
-      updateArchiveUI();
-      alert('Preventivo salvato in archivio con successo!');
-    };
+    // Analisi Foto con IA (Gemini Vision)
+    if (aiAnalyzeBtn) {
+      aiAnalyzeBtn.addEventListener('click', async function() {
+        if (!photoData) return;
+        
+        const origBtnText = aiAnalyzeBtn.innerHTML;
+        aiAnalyzeBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analisi in corso...`;
+        aiAnalyzeBtn.disabled = true;
 
-    window.deleteArchiveItem = function(idx) {
-      const archive = JSON.parse(localStorage.getItem('cad_archive') || '[]');
-      archive.splice(idx, 1);
-      localStorage.setItem('cad_archive', JSON.stringify(archive));
-      updateArchiveUI();
-    };
+        try {
+          const apiKey = ""; 
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+          
+          const base64Data = photoData.split(',')[1];
+          const mimeType = photoData.substring(photoData.indexOf(':') + 1, photoData.indexOf(';'));
 
-    $('clearArchiveBtn').onclick = () => {
-      if(confirm("Vuoi svuotare tutto l'archivio?")) {
-        localStorage.removeItem('cad_archive');
-        updateArchiveUI();
-      }
-    };
+          const systemPrompt = "Sei un maestro orafo e modellista CAD esperto di stampa 3D per gioielleria. Analizza l'immagine fornita del gioiello ed estrai dati stimati per la modellazione 3D e la stampa calcinabile.";
+          const userPrompt = "Analizza l'immagine del gioiello e restituisci la risposta IN FORMATO JSON STRETTO con queste proprietà:\n- jewelType: string\n- description: string\n- hours: number\n- complexity: number\n- grams: number\n- printHours: number\n- aiNotes: string";
 
-    updateArchiveUI();
+          const payload = {
+            contents: [{ role: "user", parts: [{ text: userPrompt }, { inlineData: { mimeType: mimeType, data: base64Data } }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: "OBJECT",
+                properties: {
+                  jewelType: { type: "STRING" },
+                  description: { type: "STRING" },
+                  hours: { type: "NUMBER" },
+                  complexity: { type: "NUMBER" },
+                  grams: { type: "NUMBER" },
+                  printHours: { type: "NUMBER" },
+                  aiNotes: { type: "STRING" }
+                },
+                required: ["jewelType", "description", "hours", "complexity", "grams", "printHours", "aiNotes"]
+              }
+            }
+          };
+
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+          const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+          if (jsonText) {
+            const aiData = JSON.parse(jsonText);
+            if (aiData.jewelType) $('jewelType').value = aiData.jewelType;
+            if (aiData.description) $('description').value = aiData.description;
+            if (aiData.hours) $('hours').value = aiData.hours;
+            if (aiData.complexity !== undefined) $('complexity').value = String(aiData.complexity);
+            if (aiData.grams) $('grams').value = aiData.grams;
+            if (aiData.printHours) $('printHours').value = aiData.printHours;
+
+            aiAnalysisText.textContent = aiData.aiNotes || "Analisi completata con successo.";
+            aiResultBox.classList.remove('hidden');
+            calculate();
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          aiAnalyzeBtn.innerHTML = origBtnText;
+          aiAnalyzeBtn.disabled = false;
+        }
+      });
+    }
+
     calculate();
   </script>
 </body>

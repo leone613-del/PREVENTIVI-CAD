@@ -549,8 +549,8 @@
         aiAnalyzeBtn.disabled = true;
 
         try {
-          const apiKey = ""; 
-          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+          const apiKey = "AIzaSyAZa-placeholder-key-for-gemini-vision"; 
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
           
           const base64Data = photoData.split(',')[1];
           const mimeType = photoData.substring(photoData.indexOf(':') + 1, photoData.indexOf(';'));
@@ -603,6 +603,7 @@
           }
         } catch (err) {
           console.error(err);
+          alert("Errore di connessione con l'IA. Riprova.");
         } finally {
           aiAnalyzeBtn.innerHTML = origBtnText;
           aiAnalyzeBtn.disabled = false;

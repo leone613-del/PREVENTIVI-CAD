@@ -228,7 +228,7 @@
                   </button>
                 </div>
 
-                <!-- Pulsante Dorato Analisi IA (Senza scritta Gemini Vision) -->
+                <!-- Pulsante Dorato Analisi IA -->
                 <button id="aiAnalyzeBtn" class="no-print w-full bg-gradient-to-r from-gold/90 via-gold to-goldhover text-darkbg font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg text-xs hover:opacity-95">
                   <i class="fa-solid fa-wand-magic-sparkles"></i> Analizza Foto con IA
                 </button>
@@ -544,19 +544,12 @@
       aiAnalyzeBtn.addEventListener('click', async function() {
         if (!photoData) return;
         
-        // ⚠️ INSERISCI QUI LA TUA CHIAVE API DI GOOGLE AI STUDIO
-        const apiKey = "INSERISCI_QUI_LA_TUA_API_KEY"; 
-        
-        if (!apiKey || apiKey === "INSERISCI_QUI_LA_TUA_API_KEY") {
-          alert("Attenzione: Inserisci la tua chiave API di Google Gemini nel codice.");
-          return;
-        }
-
         const origBtnText = aiAnalyzeBtn.innerHTML;
         aiAnalyzeBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analisi in corso...`;
         aiAnalyzeBtn.disabled = true;
 
         try {
+          const apiKey = ""; 
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
           
           const base64Data = photoData.split(',')[1];
@@ -610,7 +603,6 @@
           }
         } catch (err) {
           console.error(err);
-          alert("Errore durante l'analisi IA: " + err.message);
         } finally {
           aiAnalyzeBtn.innerHTML = origBtnText;
           aiAnalyzeBtn.disabled = false;

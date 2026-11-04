@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#121316">
+<meta name="description" content="PWA per il calcolo e la gestione dei preventivi di modellazione CAD 3D e stampa 3D Castable per Gioielleria.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jewelry CAD">
+<title>CAD Jewelry Price — PWA Preventivi</title>
+
+<!-- Font e Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          darkbg: '#0f1013',
+          panel: '#181a20',
+          panel2: '#22252e',
+          panel3: '#2a2d38',
+          gold: '#c9a86a',
+          gold2: '#e2c58d',
+          goldhover: '#dabb7b',
+          line: '#333642',
+          muted: '#9ca3af',
+          emeraldCustom: '#34d399',
+          roseCustom: '#f87171'
+        }
+      }
+    }
+  }
+</script>
+
+<!-- Dynamic Web App Manifest -->
+<script>
+  const manifestData = {
+    "name": "CAD Jewelry Price",
+    "short_name": "JewelryCAD",
+    "description": "Preventivi per modellazione CAD 3D e stampa resina Castable",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#0f1013",
+    "theme_color": "#121316",
+    "icons": [
+      {
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23c9a86a'><path d='M256 32L32 192l224 288 224-288L256 32zm0 68l140 100H116L256 100zm-152 132h304L256 420 104 232z'/></svg>",
+        "sizes": "512x512",
+        "type": "image/svg+xml"
+      }
+    ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+  const manifestURL = URL.createObjectURL(manifestBlob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = manifestURL;
+  document.head.appendChild(link);
+</script>
+
+<!-- Font Awesome icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0f1013;
+    color: #f3f4f6;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Custom styling for inputs */
+  input, select, textarea {
+    background-color: #121318 !important;
+    border: 1px solid #333642 !important;
+    color: #f3f4f6 !important;
+    transition: all 0.2s ease;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none !important;
+    border-color: #c9a86a !important;
+    box-shadow: 0 0 0 2px rgba(201, 168, 106, 0.2) !important;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Stampa e PDF Layout */
+  @media print {
+    body {
+      background: white !important;
+      color: #111 !important;
+      font-size: 12pt;
+    }
+    .no-print {
+      display: none !important;
+    }
+    .print-only {
+      display: block !important;
+    }
+    .card-print {
+      background: white !important;
+      border: 1px solid #ccc !important;
+      box-shadow: none !important;
+      color: #111 !important;
+      break-inside: avoid;
+    }
+    input, select, textarea {
+      background: transparent !important;
+      border: none !important;
+      color: #000 !important;
+      padding: 0 !important;
+      appearance: none;
+    }
+    .print-header {
+      border-bottom: 2px solid #c9a86a;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .print-total-box {
+      background: #f9f8f5 !important;
+      border: 1px solid #c9a86a !important;
+      color: #111 !important;
+    }
+    .print-text-gold {
+      color: #8a6d3b !important;
+    }
+  }
+</style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-gold selection:text-black">
+
+  <!-- Header Header / TopBar -->
+  <header class="border-b border-line bg-gradient-to-r from-panel via-darkbg to-panel sticky top-0 z-40 backdrop-blur-md bg-opacity-90">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gold/20 to-gold/40 border border-gold/50 flex items-center justify-center text-gold shadow-lg shadow-gold/10">
+          <i class="fa-solid fa-gem text-lg"></i>
+        </div>
+        <div>
+          <span class="text-[10px] tracking-widest text-gold uppercase font-bold block">Jewelry CAD · Studio Tools</span>
+          <h1 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+            CAD Jewelry Price
+            <span id="pwaBadge" class="hidden text-[10px] bg-gold/20 text-gold border border-gold/30 px-2 py-0.5 rounded-full font-medium">PWA</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Action Buttons TopBar -->
+      <div class="flex items-center gap-2 no-print">
+        <button id="installPwaBtn" class="hidden text-xs bg-gold/10 hover:bg-gold/20 text-gold border border-gold/40 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Installa App</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content Container -->
+  <main class="max-w-6xl w-full mx-auto px-4 py-6 flex-grow">
+    
+    <!-- Navigation Tabs -->
+  <nav class="flex gap-2 border-b border-line pb-3 mb-6 no-scrollbar overflow-x-auto no-print">
+    <button class="tab-btn active px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10" data-tab="cad-quote">
+      <i class="fa-solid fa-cube"></i> 1. Preventivo CAD
+    </button>
+    <button class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line" data-tab="print-quote">
+      <i class="fa-solid fa-print"></i> 2. Preventivo Stampa 3D
+    </button>
+    <button class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line" data-tab="total-summary">
+      <i class="fa-solid fa-calculator"></i> 3. Riepilogo & Stampa
+    </button>
+    <button class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line" data-tab="settings">
+      <i class="fa-solid fa-sliders"></i> Listino Personale
+    </button>
+    <button class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line" data-tab="archive">
+      <i class="fa-solid fa-folder-open"></i> Archivio <span id="archiveBadge" class="ml-1 bg-line text-white text-xs px-2 py-0.5 rounded-full">0</span>
+    </button>
+  </nav>
+
+  <!-- SECTION 1: PREVENTIVO CAD 3D -->
+  <section id="cad-quote" class="tab-content block">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- CARD 1: Progetto, Cliente & AI Analysis -->
+      <div class="bg-panel border border-line rounded-2xl p-5 shadow-sm card-print">
+        <h2 class="text-base font-semibold text-white mb-4 flex items-center justify-between border-b border-line/60 pb-2">
+          <span class="flex items-center gap-2 print-text-gold"><i class="fa-solid fa-folder text-gold"></i> Progetto e Cliente</span>
+          <span class="text-xs text-emeraldCustom flex items-center gap-1 font-normal"><i class="fa-solid fa-bolt"></i> Calcolo automatico attivo</span>
+        </h2>
+
+        <div class="space-y-4">
+          <div>
+            <label for="project" class="block text-xs font-medium text-muted mb-1">Nome del Progetto *</label>
+            <input id="project" type="text" placeholder="Es. Anello Solitario con Pavé" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="client" class="block text-xs font-medium text-muted mb-1">Cliente</label>
+              <input id="client" type="text" placeholder="Nome o ID cliente" class="w-full rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label for="jewelType" class="block text-xs font-medium text-muted mb-1">Tipologia Gioiello</label>
+              <select id="jewelType" class="w-full rounded-lg px-3 py-2 text-sm">
+                <option>Anello</option>
+                <option>Fede</option>
+                <option>Orecchini</option>
+                <option>Pendente</option>
+                <option>Bracciale</option>
+                <option>Collana</option>
+                <option>Spilla</option>
+                <option>Altro</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-muted mb-1">Foto / Schizzo di riferimento</label>
+            <div class="relative no-print">
+              <input id="photo" type="file" accept="image/*" class="hidden">
+              <label for="photo" class="flex items-center justify-center gap-2 w-full p-3 border-2 border-dashed border-line rounded-xl cursor-pointer hover:border-gold transition text-xs text-muted hover:text-white bg-darkbg/50">
+                <i class="fa-solid fa-cloud-arrow-up text-gold text-base"></i> Carica foto o schizzo del gioiello
+              </label>
+            </div>
+            
+            <!-- Image Preview & AI Action Container -->
+            <div id="previewContainer" class="relative mt-3 hidden">
+              <img id="preview" src="" alt="Anteprima Progetto" class="w-full max-h-48 object-contain rounded-xl border border-line bg-darkbg p-1">
+              <button id="removePhotoBtn" class="no-print absolute top-2 right-2 bg-roseCustom/80 hover:bg-roseCustom text-white p-1.5 rounded-full text-xs transition">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              
+              <!-- AI Analysis Button -->
+              <button id="aiAnalyzeBtn" class="no-print mt-2 w-full bg-gradient-to-r from-gold/90 via-gold to-goldhover text-darkbg font-bold py-2 px-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg text-xs">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Analizza Foto con IA (Gemini Vision)
+              </button>
+            </div>
+
+            <!-- AI Result Box -->
+            <div id="aiResultBox" class="hidden mt-3 p-3 bg-gold/10 border border-gold/30 rounded-xl text-xs space-y-1.5 no-print">
+              <div class="font-bold text-gold flex items-center gap-1.5">
+                <i class="fa-solid fa-brain"></i> Analisi IA Modellazione & Stampa:
+              </div>
+              <p id="aiAnalysisText" class="text-gray-300 text-[11px] leading-relaxed"></p>
+            </div>
+          </div>
+
+          <div>
+            <label for="description" class="block text-xs font-medium text-muted mb-1">Lavorazioni e Dettagli Tecnici</label>
+            <textarea id="description" rows="3" placeholder="Pietre, castoni, pavé, spessori minimi, incisioni..." class="w-full rounded-lg px-3 py-2 text-sm"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Parametri Modellazione CAD 3D -->
+      <div class="bg-panel border border-line rounded-2xl p-5 shadow-sm card-print flex flex-col justify-between">
+        <div>
+          <h2 class="text-base font-semibold text-white mb-4 flex items-center gap-2 print-text-gold border-b border-line/60 pb-2">
+            <i class="fa-solid fa-cube text-gold"></i> Parametri Modellazione CAD 3D
+          </h2>
+
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="hours" class="block text-xs font-medium text-muted mb-1">Ore Modellazione</label>
+                <input id="hours" type="number" min="0" step="0.25" value="3" class="w-full rounded-lg px-3 py-2 text-sm">
+              </div>
+              <div>
+                <label for="rate" class="block text-xs font-medium text-muted mb-1">Tariffa Oraria (€/h)</label>
+                <input id="rate" type="number" min="0" step="1" value="30" class="w-full rounded-lg px-3 py-2 text-sm">
+              </div>
+            </div>
+
+            <div>
+              <label for="complexity" class="block text-xs font-medium text-muted mb-1">Complessità Modello</label>
+              <select id="complexity" class="w-full rounded-lg px-3 py-2 text-sm">
+                <option value="0">Semplice (+0%)</option>
+                <option value="20" selected>Media (+20%)</option>
+                <option value="40">Alta (+40%)</option>
+                <option value="60">Molto Alta (+60%)</option>
+                <option value="100">Scolpita / Artistica (+100%)</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="urgency" class="block text-xs font-medium text-muted mb-1">Urgenza Consegna</label>
+                <select id="urgency" class="w-full rounded-lg px-3 py-2 text-sm">
+                  <option value="0">Normale (+0%)</option>
+                  <option value="15">Urgente (+15%)</option>
+                  <option value="30">Molto Urgente (+30%)</option>
+                </select>
+              </div>
+              <div>
+                <label for="revisions" class="block text-xs font-medium text-muted mb-1">Modifiche Extra (€)</label>
+                <input id="revisions" type="number" min="0" step="0.5" value="0" class="w-full rounded-lg px-3 py-2 text-sm">
+              </div>
+            </div>
+
+            <div>
+              <label for="included" class="block text-xs font-medium text-muted mb-1">Revisioni Incluse</label>
+              <select id="included" class="w-full rounded-lg px-3 py-2 text-sm">
+                <option>1 Revisione inclusa</option>
+                <option selected>2 Revisioni incluse</option>
+                <option>3 Revisioni incluse</option>
+                <option>Nessuna revisione inclusa</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAD Subtotal Box -->
+        <div class="mt-6 p-4 bg-panel2 border border-gold/30 rounded-xl flex items-center justify-between">
+          <span class="text-xs text-muted font-medium">Sub-totale Modellazione CAD</span>
+          <span id="cadSubtotal" class="text-xl font-bold text-gold">€ 0,00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: PREVENTIVO STAMPA 3D (SCHEDA SEPARATA) -->
+  <section id="print-quote" class="tab-content hidden">
+    <div class="max-w-3xl mx-auto bg-panel border border-line rounded-2xl p-6 shadow-md card-print">
+      <div class="flex items-center justify-between border-b border-line pb-4 mb-6">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2 print-text-gold">
+            <i class="fa-solid fa-print text-gold"></i> Calcolo Stampa 3D Castable (LCD / MSLA)
+          </h2>
+          <p class="text-xs text-muted mt-0.5">Modulo indipendente per il calcolo dei costi di produzione resina calcinabile</p>
+        </div>
+        <span class="text-xs bg-gold/10 text-gold border border-gold/30 px-2.5 py-1 rounded-full font-medium">
+          Stampa LCD/MSLA
+        </span>
+      </div>
+
+      <div class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso Resina Stimato (g)</label>
+            <input id="grams" type="number" min="0" step="0.1" value="6" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label for="resinPrice" class="block text-xs font-medium text-muted mb-1">Costo Resina (€/kg)</label>
+            <input id="resinPrice" type="number" min="0" step="1" value="250" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="printHours" class="block text-xs font-medium text-muted mb-1">Tempo di Stampa (Ore)</label>
+            <input id="printHours" type="number" min="0" step="0.25" value="3" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label for="machineRate" class="block text-xs font-medium text-muted mb-1">Costo Macchina / Ammortamento (€/h)</label>
+            <input id="machineRate" type="number" min="0" step="0.5" value="2" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="consumables" class="block text-xs font-medium text-muted mb-1">Supporti, Alcool e Consumabili (€)</label>
+            <input id="consumables" type="number" min="0" step="0.5" value="3" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label for="waste" class="block text-xs font-medium text-muted mb-1">Scarto Resina e Lavaggio (%)</label>
+            <input id="waste" type="number" min="0" step="1" value="10" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+
+        <!-- Breakdown Details for Print -->
+        <div class="bg-darkbg/60 p-4 rounded-xl border border-line/60 space-y-2 text-xs">
+          <div class="flex justify-between text-muted">
+            <span>Costo Resina Usata (con scarto):</span>
+            <strong id="printResinCostDetail" class="text-white">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between text-muted">
+            <span>Costo Utilizzo Macchina:</span>
+            <strong id="printMachineCostDetail" class="text-white">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between text-muted">
+            <span>Supporti & Consumabili:</span>
+            <strong id="printConsumablesCostDetail" class="text-white">€ 0,00</strong>
+          </div>
+        </div>
+
+        <!-- Print Subtotal -->
+        <div class="p-4 bg-panel2 border border-gold/30 rounded-xl flex items-center justify-between">
+          <span class="text-sm font-semibold text-white">Sub-totale Stampa 3D</span>
+          <span id="printSubtotal" class="text-2xl font-bold text-gold">€ 0,00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: RIEPILOGO TOTALE & PREVENTIVO -->
+  <section id="total-summary" class="tab-content hidden">
+    <div class="max-w-4xl mx-auto space-y-6">
+      
+      <!-- CARD: Note Aggiuntive -->
+      <div class="bg-panel border border-line rounded-2xl p-5 shadow-sm card-print">
+        <h2 class="text-base font-semibold text-white mb-3 flex items-center gap-2 print-text-gold">
+          <i class="fa-solid fa-file-lines text-gold"></i> Note e Condizioni di Fornitura
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="other" class="block text-xs font-medium text-muted mb-1">Spese Generali Extra (€)</label>
+            <input id="other" type="number" min="0" step="0.5" value="0" class="w-full rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label for="notes" class="block text-xs font-medium text-muted mb-1">Note da riportare nel preventivo</label>
+            <textarea id="notes" rows="2" placeholder="Tempi di consegna, esclusioni, clausole..." class="w-full rounded-lg px-3 py-2 text-sm"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD: RIEPILOGO FINALE -->
+      <div class="bg-gradient-to-b from-panel2 to-panel border border-gold/40 rounded-2xl p-6 shadow-xl card-print print-total-box">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line/80 pb-4 mb-4">
+          <div>
+            <span class="text-xs uppercase tracking-wider font-semibold text-gold">Proposta Economica Finale</span>
+            <h2 class="text-xl font-bold text-white tracking-tight">Riepilogo Generale Preventivo</h2>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-muted block">TOTALE COMPLESSIVO (IVA Escl.)</span>
+            <span id="total" class="text-3xl sm:text-4xl font-extrabold text-gold2 tracking-tight">€ 0,00</span>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between py-1.5 border-b border-line/40">
+            <span class="text-muted">Modellazione CAD (Ore × Tariffa + Complessità + Urgenza)</span>
+            <strong id="cadCost" class="text-white font-medium">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-line/40">
+            <span class="text-muted">Resina Castable (incluso scarto stimato)</span>
+            <strong id="resinCost" class="text-white font-medium">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-line/40">
+            <span class="text-muted">Ammortamento Macchina e Stampa</span>
+            <strong id="machineCost" class="text-white font-medium">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-line/40">
+            <span class="text-muted">Supporti, Alcool e Consumabili</span>
+            <strong id="consCost" class="text-white font-medium">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-line/40">
+            <span class="text-muted">Revisioni ed Extra CAD</span>
+            <strong id="revisionCost" class="text-white font-medium">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-line/40">
+            <span class="text-muted">Altri Costi / Spese Generali</span>
+            <strong id="otherCost" class="text-white font-medium">€ 0,00</strong>
+          </div>
+          <div class="flex justify-between py-2 text-base font-bold text-white pt-2">
+            <span>TOTALE PREVENTIVO</span>
+            <span id="totalLine" class="text-gold">€ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-wrap gap-2.5 mt-6 pt-4 border-t border-line/60 no-print">
+          <button id="saveBtn" class="flex-1 min-w-[140px] bg-gold hover:bg-goldhover text-darkbg font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md">
+            <i class="fa-solid fa-floppy-disk"></i> Salva Preventivo
+          </button>
+          <button id="pdfBtn" class="flex-1 min-w-[140px] bg-panel3 hover:bg-line text-white border border-line font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-print text-gold"></i> Stampa / PDF
+          </button>
+          <button id="copyBtn" class="flex-1 min-w-[140px] bg-panel3 hover:bg-line text-white border border-line font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-copy text-gold"></i> Copia testo
+          </button>
+          <button id="newBtn" class="bg-roseCustom/10 hover:bg-roseCustom/20 text-roseCustom border border-roseCustom/30 font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- SECTION 2: LISTINO PERSONALE -->
+    <section id="settings" class="tab-content hidden">
+      <div class="bg-panel border border-line rounded-2xl p-6 max-w-3xl mx-auto shadow-md">
+        <div class="border-b border-line pb-4 mb-6">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-gold"></i> Listino e Configurazione Predefinita
+          </h2>
+          <p class="text-xs text-muted mt-1">
+            Configura le tue tariffe standard. Verranno caricate automaticamente per ogni nuovo preventivo su questo dispositivo.
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="sRate" class="block text-xs font-medium text-muted mb-1">Tariffa Oraria CAD Standard (€/h)</label>
+              <input id="sRate" type="number" min="0" value="30" class="w-full rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label for="sResin" class="block text-xs font-medium text-muted mb-1">Prezzo Resina Castable Standard (€/kg)</label>
+              <input id="sResin" type="number" min="0" value="250" class="w-full rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label for="sMachine" class="block text-xs font-medium text-muted mb-1">Costo Orario Macchina / Stampa (€/h)</label>
+              <input id="sMachine" type="number" min="0" value="2" class="w-full rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label for="sConsumables" class="block text-xs font-medium text-muted mb-1">Consumabili Base Stampa (€)</label>
+              <input id="sConsumables" type="number" min="0" value="3" class="w-full rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label for="sWaste" class="block text-xs font-medium text-muted mb-1">Scarto Resina Predefinito (%)</label>
+              <input id="sWaste" type="number" min="0" value="10" class="w-full rounded-lg px-3 py-2 text-sm">
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-line flex justify-end">
+            <button id="applySettings" class="bg-gold hover:bg-goldhover text-darkbg font-bold py-2.5 px-6 rounded-xl transition flex items-center gap-2 shadow-md">
+              <i class="fa-solid fa-check"></i> Salva Impostazioni
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: ARCHIVIO PREVENTIVI -->
+    <section id="archive" class="tab-content hidden">
+      <div class="bg-panel border border-line rounded-2xl p-6 shadow-md">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4 mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-box-archive text-gold"></i> Archivio Preventivi Salvati
+            </h2>
+            <p class="text-xs text-muted mt-1">Storico locale dei preventivi generati e salvati</p>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button id="exportCsv" class="bg-panel2 hover:bg-line text-white border border-line text-xs font-medium py-2 px-3 rounded-lg transition flex items-center gap-1.5">
+              <i class="fa-solid fa-file-csv text-emeraldCustom"></i> Esporta CSV
+            </button>
+            <button id="clearArchive" class="bg-roseCustom/10 hover:bg-roseCustom/20 text-roseCustom border border-roseCustom/30 text-xs font-medium py-2 px-3 rounded-lg transition flex items-center gap-1.5">
+              <i class="fa-solid fa-trash-can"></i> Svuota Archivio
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div id="archiveListContainer" class="overflow-x-auto">
+          <div id="archiveList" class="text-center py-12 text-muted text-sm">
+            Nessun preventivo salvato in memoria.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast Modal -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-panel2 border border-gold/50 text-white text-xs sm:text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+      <div id="toastIcon" class="text-gold text-base">
+        <i class="fa-solid fa-circle-info"></i>
+      </div>
+      <span id="toastMessage">Messaggio di notifica</span>
+    </div>
+  </div>
+
+  <!-- Detail Modal for Archive items -->
+  <div id="detailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-panel border border-gold/40 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button id="closeModalBtn" class="absolute top-4 right-4 text-muted hover:text-white p-1 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-lg font-bold text-white mb-2" id="modalTitle">Dettaglio Preventivo</h3>
+      <div id="modalContent" class="space-y-3 text-sm text-muted">
+        <!-- Dynamic Modal Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-line/60 bg-darkbg py-4 text-center text-xs text-muted/60 no-print mt-8">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <span>CAD Jewelry Price — Studio Tool per Modellatori 3D</span>
+      <span class="flex items-center gap-1"><i class="fa-solid fa-shield-halved text-gold/60"></i> Dati salvati in locale nel browser</span>
+    </div>
+  </footer>
+
+  <!-- App Main Logic JavaScript -->
+  <script>
+    const $ = id => document.getElementById(id);
+    const inputIds = ['hours','rate','complexity','revisions','urgency','grams','resinPrice','printHours','machineRate','consumables','waste','other'];
+    let photoData = '';
+    let lastCalculation = null;
+
+    function showToast(message, iconClass = 'fa-circle-info') {
+      const toast = $('toast');
+      $('toastMessage').textContent = message;
+      $('toastIcon').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    const num = id => Math.max(0, Number($(id).value) || 0);
+    const euro = n => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n || 0);
+
+    // Automatic Real-Time Calculation Logic
+    function calculate() {
+      const cadBase = num('hours') * num('rate');
+      const cad = cadBase * (1 + num('complexity') / 100) * (1 + num('urgency') / 100);
+      
+      const resin = (num('grams') / 1000) * num('resinPrice') * (1 + num('waste') / 100);
+      const machine = num('printHours') * num('machineRate');
+      const consum = num('consumables');
+      const printTotal = resin + machine + consum;
+
+      const revisions = num('revisions');
+      const other = num('other');
+
+      const total = cad + printTotal + revisions + other;
+
+      lastCalculation = { cad, resin, machine, consum, printTotal, revisions, other, total };
+
+      // Update CAD Subtotal Box
+      $('cadSubtotal').textContent = euro(cad);
+
+      // Update Print Breakdown & Subtotal Box
+      $('printResinCostDetail').textContent = euro(resin);
+      $('printMachineCostDetail').textContent = euro(machine);
+      $('printConsumablesCostDetail').textContent = euro(consum);
+      $('printSubtotal').textContent = euro(printTotal);
+
+      // Update Summary Table
+      $('cadCost').textContent = euro(cad);
+      $('resinCost').textContent = euro(resin);
+      $('machineCost').textContent = euro(machine);
+      $('consCost').textContent = euro(consum);
+      $('revisionCost').textContent = euro(revisions);
+      $('otherCost').textContent = euro(other);
+      $('total').textContent = euro(total);
+      $('totalLine').textContent = euro(total);
+
+      return lastCalculation;
+    }
+
+    function getQuoteData() {
+      const c = lastCalculation || calculate();
+      const refNum = 'CAD-' + Math.floor(1000 + Math.random() * 9000);
+      return {
+        id: Date.now(),
+        ref: refNum,
+        date: new Date().toLocaleDateString('it-IT'),
+        project: $('project').value.trim() || 'Progetto Senza Nome',
+        client: $('client').value.trim() || '—',
+        jewelType: $('jewelType').value,
+        description: $('description').value,
+        notes: $('notes').value,
+        total: c.total,
+        cad: c.cad,
+        resin: c.resin,
+        machine: c.machine,
+        consum: c.consum,
+        revisions: c.revisions,
+        other: c.other,
+        photo: photoData
+      };
+    }
+
+    function getArchive() {
+      try {
+        return JSON.parse(localStorage.getItem('cadJewelryQuotesPWA') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function setArchive(arr) {
+      localStorage.setItem('cadJewelryQuotesPWA', JSON.stringify(arr));
+      updateArchiveBadge();
+    }
+
+    function updateArchiveBadge() {
+      const list = getArchive();
+      $('archiveBadge').textContent = list.length;
+    }
+
+    function safeStr(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    // Attach Input Listeners for ALWAYS Live Calculation
+    inputIds.forEach(id => {
+      $(id).addEventListener('input', calculate);
+    });
+    ['project','client','description','notes','jewelType','included'].forEach(id => {
+      $(id).addEventListener('input', () => {});
+    });
+
+    // Image Upload
+    $('photo').addEventListener('change', e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('Seleziona un file immagine valido.', 'fa-triangle-exclamation');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        photoData = reader.result;
+        $('preview').src = photoData;
+        $('previewContainer').classList.remove('hidden');
+        $('aiResultBox').classList.add('hidden');
+        showToast('Immagine caricata. Puoi analizzarla con l\'IA.', 'fa-image');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    $('removePhotoBtn').onclick = () => {
+      photoData = '';
+      $('photo').value = '';
+      $('preview').src = '';
+      $('previewContainer').classList.add('hidden');
+      $('aiResultBox').classList.add('hidden');
+    };
+
+    // AI GEMINI VISION INTEGRATION FOR PHOTO ESTIMATION
+    $('aiAnalyzeBtn').onclick = async () => {
+      if (!photoData) {
+        showToast('Nessuna immagine presente.', 'fa-triangle-exclamation');
+        return;
+      }
+
+      const btn = $('aiAnalyzeBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analisi in corso...`;
+      btn.disabled = true;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        
+        const base64Data = photoData.split(',')[1];
+        const mimeType = photoData.substring(photoData.indexOf(':') + 1, photoData.indexOf(';'));
+
+        const systemPrompt = "Sei un maestro orafo e modellista CAD esperto di stampa 3D per gioielleria. Analizza l'immagine fornita del gioiello ed estrai dati stimati per la modellazione 3D e la stampa calcinabile.";
+        const userPrompt = "Analizza l'immagine del gioiello e restituisci la risposta IN FORMATO JSON STRETTO con queste proprietà:\n" +
+          "- jewelType: string (scelta tra: Anello, Fede, Orecchini, Pendente, Bracciale, Collana, Spilla, Altro)\n" +
+          "- description: string (descrizione delle caratteristiche geometriche, griffe, pavé o lavorazioni)\n" +
+          "- hours: number (ore CAD stimate tra 1 e 12)\n" +
+          "- complexity: number (valore esatto tra 0, 20, 40, 60, 100 in base alla difficoltà)\n" +
+          "- grams: number (peso resina stimato in grammi con supporti, es. 4.5)\n" +
+          "- printHours: number (ore di stampa stimate, es. 3.5)\n" +
+          "- aiNotes: string (breve sintesi orafa sul perché di questa stima)";
+
+        const payload = {
+          contents: [
+            {
+              role: "user",
+              parts: [
+                { text: userPrompt },
+                {
+                  inlineData: {
+                    mimeType: mimeType,
+                    data: base64Data
+                  }
+                }
+              ]
+            }
+          ],
+          systemInstruction: {
+            parts: [{ text: systemPrompt }]
+          },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                jewelType: { type: "STRING" },
+                description: { type: "STRING" },
+                hours: { type: "NUMBER" },
+                complexity: { type: "NUMBER" },
+                grams: { type: "NUMBER" },
+                printHours: { type: "NUMBER" },
+                aiNotes: { type: "STRING" }
+              },
+              required: ["jewelType", "description", "hours", "complexity", "grams", "printHours", "aiNotes"]
+            }
+          }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (jsonText) {
+          const aiData = JSON.parse(jsonText);
+
+          // Populate Form with AI recommendations
+          if (aiData.jewelType) $('jewelType').value = aiData.jewelType;
+          if (aiData.description) $('description').value = aiData.description;
+          if (aiData.hours) $('hours').value = aiData.hours;
+          if (aiData.complexity !== undefined) $('complexity').value = String(aiData.complexity);
+          if (aiData.grams) $('grams').value = aiData.grams;
+          if (aiData.printHours) $('printHours').value = aiData.printHours;
+
+          // Display AI Analysis summary box
+          $('aiAnalysisText').textContent = aiData.aiNotes || "Analisi completata con successo.";
+          $('aiResultBox').classList.remove('hidden');
+
+          // Recalculate
+          calculate();
+          showToast('Preventivo compilato da IA con successo!', 'fa-wand-magic-sparkles');
+        } else {
+          showToast('Impossibile analizzare l\'immagine.', 'fa-triangle-exclamation');
+        }
+
+      } catch (err) {
+        console.error(err);
+        showToast('Errore durante l\'analisi IA dell\'immagine.', 'fa-circle-xmark');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    };
+
+    // Tabs Switch logic
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.className = "tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-panel2 text-muted hover:text-white hover:border-gold border border-line";
+        });
+        btn.className = "tab-btn active px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center gap-2 whitespace-nowrap bg-gold text-darkbg font-semibold shadow-md shadow-gold/10";
+
+        const target = btn.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(section => {
+          section.classList.toggle('hidden', section.id !== target);
+        });
+
+        if (target === 'archive') renderArchive();
+      };
+    });
+
+    // Save Quote
+    $('saveBtn').onclick = () => {
+      calculate();
+      const data = getQuoteData();
+      const archive = getArchive();
+      archive.unshift(data);
+      setArchive(archive);
+      showToast('Preventivo salvato in archivio!', 'fa-floppy-disk');
+    };
+
+    // Print & Export PDF
+    $('pdfBtn').onclick = () => {
+      calculate();
+      $('printDate').textContent = new Date().toLocaleDateString('it-IT');
+      $('printRef').textContent = '#' + Math.floor(100000 + Math.random() * 900000);
+      window.print();
+    };
+
+    // Copy Summary Text
+    $('copyBtn').onclick = () => {
+      calculate();
+      const q = getQuoteData();
+      const txt = `--- PREVENTIVO CAD JEWELRY PRICE ---
+Progetto: ${q.project}
+Cliente: ${q.client}
+Tipologia: ${q.jewelType}
+
+- Modellazione CAD: ${euro(q.cad)}
+- Resina Castable: ${euro(q.resin)}
+- Macchina / Stampa: ${euro(q.machine)}
+- Supporti & Consumabili: ${euro(q.consum)}
+- Revisioni & Extra: ${euro(q.revisions)}
+- Altri Costi: ${euro(q.other)}
+
+TOTALE ESTIMATO (IVA Escl.): ${euro(q.total)}
+Note: ${q.notes || 'Nessuna'}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(() => {
+          showToast('Riepilogo copiato negli appunti!', 'fa-copy');
+        }).catch(() => {
+          prompt('Copia il riepilogo:', txt);
+        });
+      } else {
+        prompt('Copia il riepilogo:', txt);
+      }
+    };
+
+    // Reset Form
+    $('newBtn').onclick = () => {
+      if ($('project').value.trim() !== '' && !confirm('Vuoi resettare i dati del preventivo corrente?')) return;
+      $('project').value = '';
+      $('client').value = '';
+      $('description').value = '';
+      $('notes').value = '';
+      $('photo').value = '';
+      $('preview').src = '';
+      $('previewContainer').classList.add('hidden');
+      $('aiResultBox').classList.add('hidden');
+      photoData = '';
+
+      loadSettings();
+      calculate();
+      showToast('Modulo resettato per un nuovo lavoro.', 'fa-rotate-left');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Personal Price List Settings
+    $('applySettings').onclick = () => {
+      const settings = {
+        rate: $('sRate').value,
+        resinPrice: $('sResin').value,
+        machineRate: $('sMachine').value,
+        consumables: $('sConsumables').value,
+        waste: $('sWaste').value
+      };
+      localStorage.setItem('cadJewelrySettingsPWA', JSON.stringify(settings));
+      
+      $('rate').value = settings.rate;
+      $('resinPrice').value = settings.resinPrice;
+      $('machineRate').value = settings.machineRate;
+      $('consumables').value = settings.consumables;
+      $('waste').value = settings.waste;
+
+      calculate();
+      showToast('Listino predefinito salvato e applicato!', 'fa-check');
+    };
+
+    function loadSettings() {
+      try {
+        const s = JSON.parse(localStorage.getItem('cadJewelrySettingsPWA') || 'null');
+        if (!s) return;
+        $('sRate').value = s.rate;
+        $('sResin').value = s.resinPrice;
+        $('sMachine').value = s.machineRate;
+        $('sConsumables').value = s.consumables;
+        $('sWaste').value = s.waste;
+
+        $('rate').value = s.rate;
+        $('resinPrice').value = s.resinPrice;
+        $('machineRate').value = s.machineRate;
+        $('consumables').value = s.consumables;
+        $('waste').value = s.waste;
+      } catch (e) {}
+    }
+
+    // Render Archive
+    function renderArchive() {
+      const archive = getArchive();
+      const container = $('archiveList');
+
+      if (!archive.length) {
+        container.innerHTML = `<div class="text-center py-12 text-muted text-sm">
+          <i class="fa-solid fa-folder-open text-3xl mb-3 text-line block"></i>
+          Nessun preventivo salvato nell'archivio.
+        </div>`;
+        return;
+      }
+
+      let html = `
+        <table class="w-full text-left text-xs sm:text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-line text-muted">
+              <th class="py-3 px-2">Data</th>
+              <th class="py-3 px-2">Progetto</th>
+              <th class="py-3 px-2">Cliente</th>
+              <th class="py-3 px-2">Tipo</th>
+              <th class="py-3 px-2 text-right">Totale</th>
+              <th class="py-3 px-2 text-center">Azi.</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line/40">
+      `;
+
+      archive.forEach(q => {
+        html += `
+          <tr class="hover:bg-panel2/50 transition">
+            <td class="py-3 px-2 text-muted whitespace-nowrap">${safeStr(q.date)}</td>
+            <td class="py-3 px-2 font-medium text-white">${safeStr(q.project)}</td>
+            <td class="py-3 px-2 text-muted">${safeStr(q.client)}</td>
+            <td class="py-3 px-2"><span class="bg-line/60 text-muted px-2 py-0.5 rounded text-[11px]">${safeStr(q.jewelType)}</span></td>
+            <td class="py-3 px-2 text-right font-bold text-gold whitespace-nowrap">${euro(q.total)}</td>
+            <td class="py-3 px-2 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button onclick="viewArchiveDetail(${q.id})" class="text-gold hover:text-white p-1" title="Vedi Dettaglio">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button onclick="deleteArchiveItem(${q.id})" class="text-roseCustom hover:text-red-300 p-1" title="Elimina">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    // Modal View Detail
+    window.viewArchiveDetail = function(id) {
+      const archive = getArchive();
+      const q = archive.find(x => x.id === id);
+      if (!q) return;
+
+      $('modalTitle').textContent = q.project;
+      
+      let photoHtml = q.photo ? `<div class="mb-4"><img src="${q.photo}" class="max-h-40 rounded-lg border border-line mx-auto object-contain"></div>` : '';
+
+      $('modalContent').innerHTML = `
+        ${photoHtml}
+        <div class="grid grid-cols-2 gap-2 text-xs border-b border-line pb-3">
+          <div><strong class="text-white">Cliente:</strong> ${safeStr(q.client)}</div>
+          <div><strong class="text-white">Tipologia:</strong> ${safeStr(q.jewelType)}</div>
+          <div><strong class="text-white">Data:</strong> ${safeStr(q.date)}</div>
+          <div><strong class="text-white">Riferimento:</strong> ${safeStr(q.ref || 'N/A')}</div>
+        </div>
+
+        <div class="space-y-1.5 text-xs py-2 border-b border-line">
+          <div class="flex justify-between"><span>Modellazione CAD:</span> <strong class="text-white">${euro(q.cad)}</strong></div>
+          <div class="flex justify-between"><span>Resina Castable:</span> <strong class="text-white">${euro(q.resin)}</strong></div>
+          <div class="flex justify-between"><span>Stampa / Macchina:</span> <strong class="text-white">${euro(q.machine)}</strong></div>
+          <div class="flex justify-between"><span>Supporti & Consumabili:</span> <strong class="text-white">${euro(q.consum)}</strong></div>
+          <div class="flex justify-between"><span>Revisioni / Extra:</span> <strong class="text-white">${euro(q.revisions)}</strong></div>
+          <div class="flex justify-between"><span>Altri Costi:</span> <strong class="text-white">${euro(q.other)}</strong></div>
+        </div>
+
+        <div class="flex justify-between items-center text-base font-bold text-white pt-2">
+          <span>TOTALE ESTIMATO:</span>
+          <span class="text-gold text-xl">${euro(q.total)}</span>
+        </div>
+
+        ${q.notes ? `<div class="mt-3 bg-darkbg p-2.5 rounded-lg border border-line text-xs"><strong>Note:</strong> ${safeStr(q.notes)}</div>` : ''}
+      `;
+
+      const modal = $('detailModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    $('closeModalBtn').onclick = () => {
+      const modal = $('detailModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    window.deleteArchiveItem = function(id) {
+      if (!confirm('Vuoi davvero eliminare questo preventivo dall\'archivio?')) return;
+      let archive = getArchive();
+      archive = archive.filter(x => x.id !== id);
+      setArchive(archive);
+      renderArchive();
+      showToast('Preventivo eliminato.', 'fa-trash');
+    };
+
+    $('exportCsv').onclick = () => {
+      const archive = getArchive();
+      if (!archive.length) {
+        showToast('Nessun dato da esportare.', 'fa-triangle-exclamation');
+        return;
+      }
+
+      const rows = [
+        ['Data', 'Riferimento', 'Progetto', 'Cliente', 'Tipo', 'CAD', 'Resina', 'Macchina', 'Consumabili', 'Revisioni', 'Altri Costi', 'Totale'],
+        ...archive.map(q => [q.date, q.ref || '', q.project, q.client, q.jewelType, q.cad, q.resin, q.machine, q.consum, q.revisions, q.other, q.total])
+      ];
+
+      const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `archivio_preventivi_cad_jewelry_${Date.now()}.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showToast('Esportazione CSV completata.', 'fa-file-csv');
+    };
+
+    $('clearArchive').onclick = () => {
+      if (confirm('Azione irreversibile. Vuoi cancellare tutti i preventivi in archivio?')) {
+        setArchive([]);
+        renderArchive();
+        showToast('Archivio svuotato.', 'fa-trash');
+      }
+    };
+
+    // Service Worker PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swCode = `
+          const CACHE_NAME = 'cad-jewelry-pwa-v2';
+          self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+          self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+          self.addEventListener('fetch', e => {
+            e.respondWith(
+              caches.match(e.request).then(res => res || fetch(e.request).catch(() => res))
+            );
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Registration skipped:', err));
+      });
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = $('installPwaBtn');
+      btn.classList.remove('hidden');
+
+      btn.addEventListener('click', () => {
+        btn.classList.add('hidden');
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+        });
+      });
+    });
+
+    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+      $('pwaBadge').classList.remove('hidden');
+    }
+
+    loadSettings();
+    calculate();
+    updateArchiveBadge();
+  </script>
+</body>
+</html>

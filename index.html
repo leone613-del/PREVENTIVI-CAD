@@ -294,6 +294,12 @@
                   <input id="revisions" type="number" min="0" step="0.5" value="0" class="w-full rounded-lg px-3 py-2 text-sm">
                 </div>
               </div>
+
+              <!-- Sconto CAD (%) -->
+              <div>
+                <label for="cadDiscount" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-percent"></i> Sconto CAD (%)</label>
+                <input id="cadDiscount" type="number" min="0" max="100" step="1" value="0" class="w-full rounded-lg px-3 py-2 text-sm font-semibold">
+              </div>
             </div>
           </div>
 
@@ -309,6 +315,13 @@
     <section id="print-quote" class="tab-content hidden">
       <div class="max-w-xl mx-auto bg-panel border border-line rounded-2xl p-5 shadow-sm card-print">
         <div class="space-y-4">
+          
+          <!-- Quantità Pezzi -->
+          <div class="p-3 bg-gold/10 border border-gold/30 rounded-xl">
+            <label for="printQty" class="block text-xs font-bold text-gold mb-1"><i class="fa-solid fa-boxes-stacked"></i> Numero di Pezzi da Stampare</label>
+            <input id="printQty" type="number" min="1" step="1" value="1" class="w-full rounded-lg px-3 py-2.5 text-sm font-bold text-white">
+          </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="grams" class="block text-xs font-medium text-muted mb-1">Peso Resina (g)</label>
@@ -331,59 +344,28 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label for="filePrepCost" class="block text-xs font-medium text-muted mb-1">Preparazione File (€)</label>
-              <input id="filePrepCost" type="number" min="0" step="1" value="5" class="w-full rounded-lg px-3 py-2.5 text-sm" placeholder="Es. 5">
-            </div>
-            <div>
-              <label for="waste" class="block text-xs font-medium text-muted mb-1">Scarto Resina (%)</label>
-              <input id="waste" type="number" min="0" step="1" value="10" class="w-full rounded-lg px-3 py-2.5 text-sm">
-            </div>
-          </div>
-
-          <!-- Post-Produzione (€/ora) -->
-          <div class="p-3 bg-darkbg/40 border border-line rounded-xl space-y-3">
-            <span class="text-xs font-bold text-gold uppercase tracking-wider block"><i class="fa-solid fa-wand-magic-sparkles"></i> Post-Produzione & Consumabili</span>
-            <div class="grid grid-cols-3 gap-2">
-              <div>
-                <label for="postHours" class="block text-[11px] text-muted mb-1">Ore Post-Prod.</label>
-                <input id="postHours" type="number" min="0" step="0.25" value="0.5" class="w-full rounded-lg px-2.5 py-2 text-sm">
-              </div>
-              <div>
-                <label for="postRate" class="block text-[11px] text-muted mb-1">Tariffa (€/h)</label>
-                <input id="postRate" type="number" min="0" step="1" value="25" class="w-full rounded-lg px-2.5 py-2 text-sm">
-              </div>
-              <div>
-                <label for="consumables" class="block text-[11px] text-muted mb-1">Alcol/Altro (€)</label>
-                <input id="consumables" type="number" min="0" step="0.5" value="3" class="w-full rounded-lg px-2.5 py-2 text-sm">
-              </div>
-            </div>
-          </div>
-
-          <!-- Ricarico / Margine di Vendita Stampa (%) -->
           <div>
-            <label for="printMarkup" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-chart-line"></i> Margine / Ricarico Vendita Stampa (%)</label>
-            <input id="printMarkup" type="number" min="0" step="10" value="50" class="w-full rounded-lg px-3 py-2.5 text-sm font-bold text-gold">
+            <label for="waste" class="block text-xs font-medium text-muted mb-1">Scarto Resina (%)</label>
+            <input id="waste" type="number" min="0" step="1" value="10" class="w-full rounded-lg px-3 py-2.5 text-sm">
           </div>
 
-          <!-- Breakdown Costi -->
-          <div class="bg-darkbg/80 p-4 rounded-xl border border-line/60 space-y-2 text-xs">
-            <div class="flex justify-between items-center text-muted">
-              <span>Costo Vivo Totale (Produzione):</span>
-              <strong id="printCostPure" class="text-white text-sm font-semibold">0,00 €</strong>
-            </div>
-            <div class="flex justify-between items-center text-muted">
-              <span>Ricarico Vendita Applicato:</span>
-              <strong id="printMarkupDetail" class="text-gold text-sm font-semibold">+50%</strong>
-            </div>
+          <!-- Sconto Stampa (%) -->
+          <div>
+            <label for="printDiscount" class="block text-xs font-medium text-gold mb-1"><i class="fa-solid fa-percent"></i> Sconto Stampa 3D (%)</label>
+            <input id="printDiscount" type="number" min="0" max="100" step="1" value="0" class="w-full rounded-lg px-3 py-2.5 text-sm font-semibold">
+          </div>
+
+          <!-- Prezzo unitario stimato -->
+          <div class="bg-darkbg/80 p-3 rounded-xl border border-line/60 flex justify-between items-center text-xs">
+            <span class="text-muted">Prezzo stimato per singolo pezzo:</span>
+            <strong id="pricePerPiece" class="text-white text-sm font-bold">15,00 €</strong>
           </div>
 
           <!-- Prezzo Vendita Stampa 3D Finale -->
           <div class="mt-4 p-4 bg-panel2 border border-gold/30 rounded-xl flex items-center justify-between">
             <div>
-              <span class="text-sm font-semibold text-white block">Prezzo Vendita Stampa 3D</span>
-              <span class="text-[10px] text-muted">Costo vivo + Preparazione + Post-prod + Ricarico</span>
+              <span class="text-sm font-semibold text-white block">Sub-totale Stampa 3D (Totale Pezzi)</span>
+              <span class="text-[10px] text-muted">Base min 15€/cad + parametri + quantità - sconto</span>
             </div>
             <span id="printSubtotal" class="text-2xl font-bold text-gold">0,00 €</span>
           </div>
@@ -436,49 +418,44 @@
 
   <script>
     const $ = id => document.getElementById(id);
-    const inputIds = ['hours','rate','complexity','revisions','urgency','grams','resinPrice','printHours','machineRate','filePrepCost','consumables','waste','postHours','postRate','printMarkup'];
+    const inputIds = ['hours','rate','complexity','revisions','urgency','cadDiscount','grams','resinPrice','printHours','machineRate','waste','printQty','printDiscount'];
     let photoData = '';
 
     const formatEuro = num => (num || 0).toFixed(2).replace('.', ',') + ' €';
 
     function calculate() {
-      // 1. Modellazione CAD
+      // 1. Modellazione CAD con Sconto %
       const cadBase = (Number($('hours').value) || 0) * (Number($('rate').value) || 0);
-      const cad = cadBase * (1 + (Number($('complexity').value) || 0) / 100) * (1 + (Number($('urgency').value) || 0) / 100);
-      
-      // 2. Costo Vivo Stampa 3D
+      const cadBeforeDiscount = cadBase * (1 + (Number($('complexity').value) || 0) / 100) * (1 + (Number($('urgency').value) || 0) / 100) + (Number($('revisions').value) || 0);
+      const cadDiscount = Number($('cadDiscount').value) || 0;
+      const cad = cadBeforeDiscount * (1 - cadDiscount / 100);
+
+      // 2. Stampa 3D (Base minima 15€ per pezzo + parametri aggiuntivi)
+      const qty = Math.max(1, Number($('printQty').value) || 1);
       const grams = Number($('grams').value) || 0;
       const resinPrice = Number($('resinPrice').value) || 0;
       const waste = Number($('waste').value) || 0;
       
-      const resinCostWithWaste = (grams / 1000) * resinPrice * (1 + waste / 100);
+      const resinCost = (grams / 1000) * resinPrice * (1 + waste / 100);
       const printHours = Number($('printHours').value) || 0;
       const machineRate = Number($('machineRate').value) || 0;
       const machineCost = printHours * machineRate;
+
+      // Costo aggiuntivo basato su resina e tempo macchina da sommare alla base di 15€
+      const extraPrintCost = resinCost + machineCost;
+      const unitPrintPrice = Math.max(15, 15 + extraPrintCost);
       
-      // Preparazione file (€)
-      const filePrep = Number($('filePrepCost').value) || 0;
-
-      // Post-produzione (€/ora) + Consumabili
-      const postHours = Number($('postHours').value) || 0;
-      const postRate = Number($('postRate').value) || 0;
-      const postCost = postHours * postRate;
-      const consumablesCost = Number($('consumables').value) || 0;
-
-      const printPureCost = resinCostWithWaste + machineCost + filePrep + postCost + consumablesCost;
-
-      // 3. Prezzo Vendita Stampa con Ricarico (%)
-      const markup = Number($('printMarkup').value) || 0;
-      const printSellPrice = printPureCost * (1 + markup / 100);
+      const printBeforeDiscount = unitPrintPrice * qty;
+      const printDiscount = Number($('printDiscount').value) || 0;
+      const printTotal = printBeforeDiscount * (1 - printDiscount / 100);
 
       // Totale Generale
-      const total = cad + printSellPrice;
+      const total = cad + printTotal;
 
       // Aggiornamento UI
       $('cadSubtotal').textContent = formatEuro(cad);
-      $('printCostPure').textContent = formatEuro(printPureCost);
-      if($('printMarkupDetail')) $('printMarkupDetail').textContent = `+${markup}%`;
-      $('printSubtotal').textContent = formatEuro(printSellPrice);
+      $('pricePerPiece').textContent = formatEuro(unitPrintPrice);
+      $('printSubtotal').textContent = formatEuro(printTotal);
       $('total').textContent = formatEuro(total);
     }
 
